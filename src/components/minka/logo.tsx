@@ -43,7 +43,9 @@ export function Logo({
           Minka
         </span>
       )}
-      <span className="sr-only">Minka</span>
+      {/* El nombre accesible solo se agrega si el wordmark no está visible,
+          para no anunciar "Minka" dos veces. */}
+      {variant === "icono" && <span className="sr-only">Minka</span>}
     </span>
   );
 }

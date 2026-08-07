@@ -68,6 +68,60 @@ export const USUARIO_ACTUAL: Usuario = {
   ],
 };
 
+/**
+ * Perfil alternativo con un incumplimiento encima.
+ *
+ * Existe solo para poder ver la pantalla de historial en su estado malo y el camino
+ * de redención, sin ensuciar la persona principal de la demo. Se muestra entrando a
+ * `/historial?demo=incumplimiento`.
+ */
+export const USUARIO_CON_DEUDA: Usuario = {
+  id: "u-luis",
+  nombre: "Luis Tapia",
+  telefono: "912 345 678",
+  iniciales: "LT",
+  score: 38,
+  juntasCompletadas: 1,
+  personasDistintas: 5,
+  puntualidad: 61,
+  cuotasPagadas: 11,
+  avalesDados: 0,
+  avalesRecibidos: 1,
+  deudaConFondo: 400,
+  plan: "gratuito",
+  historial: [
+    {
+      id: "hd-1",
+      tipo: "incumplimiento",
+      descripcion:
+        "No aportaste tu cuota en “Ahorro del mercado”. El fondo del grupo cubrió S/ 400.",
+      fecha: "15 de julio, 2026",
+      impactoScore: -22,
+    },
+    {
+      id: "hd-2",
+      tipo: "cuota_tarde",
+      descripcion: "Pagaste con 6 días de atraso en “Ahorro del mercado”",
+      fecha: "15 de junio, 2026",
+      impactoScore: -3,
+    },
+    {
+      id: "hd-3",
+      tipo: "aval_recibido",
+      descripcion: "Rosa Quispe te avaló en “Ahorro del mercado”",
+      fecha: "2 de mayo, 2026",
+      impactoScore: 0,
+    },
+    {
+      id: "hd-4",
+      tipo: "junta_completada",
+      descripcion: "Terminaste la junta “Vecinos San Martín”",
+      fecha: "10 de febrero, 2026",
+      impactoScore: 8,
+    },
+  ],
+};
+
 export const JUNTAS: Junta[] = [
   {
     id: "j-mercado",
@@ -402,6 +456,29 @@ export const POSIBLES_AVALES = [
     juntasJuntos: 1,
     // Su score no alcanza el mínimo para respaldar a otra persona
     disponible: false,
+  },
+];
+
+/**
+ * Solicitudes de fuerza mayor abiertas en una junta, esperando el voto del grupo.
+ *
+ * TODO: conectar a smart contract — leer las solicitudes abiertas, la ventana de
+ * 7 días restante y los votos ya emitidos.
+ */
+export const SOLICITUDES_FUERZA_MAYOR = [
+  {
+    id: "fm-1",
+    juntaId: "j-mercado",
+    solicitanteNombre: "Elena Chávez",
+    solicitanteIniciales: "EC",
+    motivo: "Enfermedad o emergencia de salud",
+    detalle:
+      "Mi hijo estuvo internado dos semanas y todo lo que tenía se fue en la clínica. Puedo ponerme al día el mes que viene.",
+    diasRestantes: 4,
+    votosAFavor: 4,
+    votosEnContra: 1,
+    totalVotantes: 7,
+    yaVote: false,
   },
 ];
 

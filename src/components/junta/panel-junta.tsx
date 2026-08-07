@@ -317,6 +317,18 @@ export function PanelJunta({
         </Card>
       ) : null}
 
+      {/* Salida para quien no pudo pagar. Va antes de la nota de custodia y con
+          tono neutro: quien llega aquí ya está pasando un mal momento. */}
+      <Link
+        href={`/junta/${junta.id}/fuerza-mayor`}
+        className="flex min-h-[56px] items-center justify-between gap-3 rounded-lg border border-minka-border bg-minka-surface px-4 text-body font-semibold text-minka-text transition-colors hover:bg-[#f0e8db]"
+      >
+        ¿No pudiste pagar este ciclo?
+        <span className="text-body font-normal text-minka-muted">
+          Avisar al grupo
+        </span>
+      </Link>
+
       {/* Custodia: nadie controla el dinero, tampoco quien organizó */}
       <p className="flex gap-3 rounded-lg border border-minka-border bg-minka-surface p-4 text-body text-minka-text">
         <Info

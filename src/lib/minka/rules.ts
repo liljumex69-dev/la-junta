@@ -132,6 +132,28 @@ export const ETIQUETA_NIVEL: Record<NivelConfianza, string> = {
 };
 
 /**
+ * Topes por plan.
+ *
+ * Los planes SOLO limitan comodidad: cuántas juntas a la vez, de qué monto, y las
+ * herramientas de gestión. Nunca tocan la elegibilidad de turno temprano ni el
+ * permiso de junta pública — eso se gana con historial y no se compra.
+ */
+export const LIMITES_PLAN = {
+  gratuito: {
+    maxJuntasSimultaneas: 5,
+    maxParticipantes: 10,
+    maxCuota: 300,
+    etiqueta: "Gratuito",
+  },
+  pro: {
+    maxJuntasSimultaneas: 20,
+    maxParticipantes: 25,
+    maxCuota: 2000,
+    etiqueta: "Organizador Pro",
+  },
+} as const;
+
+/**
  * Si el organizador puede crear juntas públicas.
  *
  * Regla no negociable: esto se gana SOLO con historial (2-3 juntas completas).

@@ -401,6 +401,67 @@ export const CONTACTOS_RECUPERACION = [
   { id: "u-sonia", nombre: "Sonia Paredes", iniciales: "SP", confirmado: false },
 ];
 
+/**
+ * Juntas a las que la usuaria todavía NO pertenece, buscadas por código de invitación.
+ *
+ * Hay una de cada modo a propósito, para poder recorrer los dos caminos de "unirse":
+ * el consentimiento explícito del modo tradicional y la vista de garantía del protegido.
+ *
+ * TODO: conectar a smart contract — resolver el código de invitación contra el
+ * contrato y leer las reglas ya fijadas de esa junta.
+ */
+export const JUNTAS_POR_CODIGO: Record<string, Junta> = {
+  PANADEROS: {
+    id: "j-panaderos",
+    nombre: "Panaderos de Lince",
+    cuota: 150,
+    frecuencia: "mensual",
+    totalParticipantes: 7,
+    modo: "protegido",
+    visibilidad: "privada",
+    asignacionTurnos: "sorteo",
+    cicloActual: 0,
+    estado: "formandose",
+    codigoInvitacion: "PANADEROS",
+    organizadorId: "u-hugo",
+    proximoPago: "cuando se complete el grupo",
+    fondoSeguro: 0,
+    participantes: [
+      { id: "u-hugo", nombre: "Hugo Peralta", iniciales: "HP", turno: 1, estadoPago: "pendiente", score: 90, yaCobro: false },
+      { id: "u-ana", nombre: "Ana Solís", iniciales: "AS", turno: 2, estadoPago: "pendiente", score: 73, yaCobro: false },
+      { id: "u-pedro", nombre: "Pedro Aliaga", iniciales: "PA", turno: 3, estadoPago: "pendiente", score: 77, yaCobro: false },
+      { id: "u-nelly", nombre: "Nelly Ortiz", iniciales: "NO", turno: 4, estadoPago: "pendiente", score: 84, yaCobro: false },
+      { id: "u-jose", nombre: "José Bautista", iniciales: "JB", turno: 5, estadoPago: "pendiente", score: 68, yaCobro: false },
+    ],
+  },
+  TIALUCHA: {
+    id: "j-tialucha",
+    nombre: "La junta de tía Lucha",
+    cuota: 80,
+    frecuencia: "quincenal",
+    totalParticipantes: 6,
+    modo: "tradicional",
+    visibilidad: "privada",
+    asignacionTurnos: "manual",
+    cicloActual: 0,
+    estado: "formandose",
+    codigoInvitacion: "TIALUCHA",
+    organizadorId: "u-marta",
+    proximoPago: "cuando se complete el grupo",
+    fondoSeguro: 0,
+    participantes: [
+      { id: "u-marta", nombre: "Marta Yupanqui", iniciales: "MY", turno: 1, estadoPago: "pendiente", score: 79, yaCobro: false },
+      { id: "u-tere", nombre: "Teresa Ríos", iniciales: "TR", turno: 2, estadoPago: "pendiente", score: 71, yaCobro: false },
+      { id: "u-nora", nombre: "Nora Salas", iniciales: "NS", turno: 3, estadoPago: "pendiente", score: 66, yaCobro: false },
+      { id: "u-ines", nombre: "Inés Calle", iniciales: "IC", turno: 4, estadoPago: "pendiente", score: 52, yaCobro: false },
+    ],
+  },
+};
+
+export function buscarPorCodigo(codigo: string): Junta | undefined {
+  return JUNTAS_POR_CODIGO[codigo.trim().toUpperCase()];
+}
+
 export function buscarJunta(id: string): Junta | undefined {
   return JUNTAS.find((j) => j.id === id);
 }

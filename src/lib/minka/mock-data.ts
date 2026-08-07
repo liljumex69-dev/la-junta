@@ -86,11 +86,14 @@ export const JUNTAS: Junta[] = [
     fondoSeguro: 96,
     participantes: [
       {
+        // Turno 3 = ciclo actual: le toca cobrar, y al ser una junta protegida
+        // necesita garantía. Es el caso que ejercita la pantalla de "cobrar mi turno"
+        // con garantía insuficiente y salida hacia "solicitar aval".
         id: "u-rosa",
         nombre: "Rosa Quispe",
         iniciales: "RQ",
-        turno: 5,
-        estadoPago: "pendiente",
+        turno: 3,
+        estadoPago: "pagado",
         score: 78,
         yaCobro: false,
       },
@@ -117,7 +120,7 @@ export const JUNTAS: Junta[] = [
         id: "u-julio",
         nombre: "Julio Mamani",
         iniciales: "JM",
-        turno: 3,
+        turno: 5,
         estadoPago: "pagado",
         score: 74,
         yaCobro: false,
@@ -341,6 +344,14 @@ export const JUNTAS: Junta[] = [
     ],
   },
 ];
+
+/**
+ * Dinero propio que la usuaria puede bloquear como garantía externa.
+ *
+ * TODO: conectar a smart contract — leer el saldo real disponible del usuario para
+ * bloquear como garantía antes de cobrar un turno temprano.
+ */
+export const SALDO_GARANTIA_DISPONIBLE = 320;
 
 /** Solicitudes de aval que otras personas le han hecho a la usuaria actual. */
 export const SOLICITUDES_AVAL: SolicitudAval[] = [

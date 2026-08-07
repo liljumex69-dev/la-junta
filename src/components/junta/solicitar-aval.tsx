@@ -205,7 +205,9 @@ export function SolicitarAval({
             checked={entiendo}
             onCheckedChange={(v) => setEntiendo(v === true)}
             className="mt-0.5 size-6"
-            aria-describedby="texto-riesgo-aval"
+            // El checkbox de Radix es un <button role="checkbox">, y envolverlo en un
+            // <label> no le da nombre accesible: hay que apuntar explícitamente al texto.
+            aria-labelledby="texto-riesgo-aval"
           />
           <span
             id="texto-riesgo-aval"

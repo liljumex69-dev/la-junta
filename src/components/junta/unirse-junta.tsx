@@ -294,7 +294,9 @@ export function UnirseJunta({
               checked={acepto}
               onCheckedChange={(v) => setAcepto(v === true)}
               className="mt-0.5 size-6"
-              aria-describedby="texto-consentimiento"
+              // Igual que en la solicitud de aval: el checkbox de Radix es un
+              // <button role="checkbox"> y necesita nombre accesible explícito.
+              aria-labelledby="texto-consentimiento"
             />
             <span id="texto-consentimiento" className="text-body font-semibold text-minka-text">
               Entiendo que en esta junta no hay garantía y que, si alguien no paga, el

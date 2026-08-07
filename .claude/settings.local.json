@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(node -v)",
+      "PowerShell(pnpm -v)",
+      "PowerShell(npm -v)",
+      "PowerShell(pnpm dlx skills add shadcn/ui 2>&1)"
+    ]
+  }
+}

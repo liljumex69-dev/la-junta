@@ -1,0 +1,177 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+  Minka — sistema de diseño
+  Fuente de verdad: docs/Minka-Sistema-de-Diseno.md
+  Solo tema claro. El modo oscuro está explícitamente fuera de alcance del MVP,
+  por eso no se declaran variables dobles ni el bloque .dark.
+*/
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-inter);
+  --font-heading: var(--font-inter);
+  --font-mono: var(--font-inter);
+
+  /* Tokens de marca Minka — nombrados igual que en el documento de diseño */
+  --color-minka-primary: #bf312a;
+  --color-minka-primary-dark: #992722;
+  --color-minka-secondary: #e38e20;
+  --color-minka-bg: #f5efe6;
+  --color-minka-surface: #fbf7f1;
+  --color-minka-text: #3a2e28;
+  --color-minka-muted: #8a7a6d;
+  --color-minka-border: #e3dacd;
+  --color-minka-success: #4b6b3a;
+  --color-minka-danger: #9c3232;
+  --color-minka-late: #e38e20;
+
+  /* Mapeo semántico shadcn/ui */
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+
+  /* Radios exactos del documento: tarjetas 12, controles 10, badges 8 */
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 12px;
+  --radius-xl: 12px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+
+  /* Sombras cálidas: usan el marrón de texto, nunca negro puro */
+  --shadow-card: 0 1px 3px rgba(58, 46, 40, 0.06);
+  --shadow-elevated: 0 4px 16px rgba(58, 46, 40, 0.12);
+
+  /* Escala tipográfica del documento */
+  --text-display: 28px;
+  --text-display--line-height: 1.3;
+  --text-h2: 22px;
+  --text-h2--line-height: 1.3;
+  --text-h3: 18px;
+  --text-h3--line-height: 1.3;
+  --text-body: 16px;
+  --text-body--line-height: 1.5;
+  --text-support: 14px;
+  --text-support--line-height: 1.5;
+  --text-micro: 12px;
+  --text-micro--line-height: 1.4;
+}
+
+:root {
+  --background: #f5efe6;
+  --foreground: #3a2e28;
+  --card: #fbf7f1;
+  --card-foreground: #3a2e28;
+  --popover: #fbf7f1;
+  --popover-foreground: #3a2e28;
+  --primary: #bf312a;
+  --primary-foreground: #fbf7f1;
+  --secondary: #e38e20;
+  --secondary-foreground: #3a2e28;
+  --muted: #ece4d8;
+  --muted-foreground: #8a7a6d;
+  --accent: #e38e20;
+  --accent-foreground: #3a2e28;
+  --destructive: #9c3232;
+  --border: #e3dacd;
+  --input: #e3dacd;
+  --ring: #bf312a;
+  --radius: 12px;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply font-sans;
+    /* Evita que iOS haga zoom al enfocar un input */
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    /* 16px es el piso absoluto de texto funcional para este público */
+    font-size: 16px;
+    line-height: 1.5;
+  }
+
+  /* Foco siempre visible y de alto contraste — el público objetivo incluye
+     personas que navegan con teclado o con precisión táctil reducida */
+  :focus-visible {
+    outline: 3px solid var(--color-minka-primary);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    line-height: 1.3;
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  /* Garantiza el área táctil mínima de 44x44px exigida por el documento */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  .shadow-card {
+    box-shadow: var(--shadow-card);
+  }
+
+  .shadow-elevated {
+    box-shadow: var(--shadow-elevated);
+  }
+
+  /* Ancho máximo por breakpoint: móvil full, tablet 600, escritorio 720.
+     Nunca estirar tarjetas de junta/pago a todo el ancho de una pantalla grande. */
+  .minka-container {
+    width: 100%;
+    margin-inline: auto;
+    padding-inline: 16px;
+  }
+  @media (min-width: 600px) {
+    .minka-container {
+      max-width: 600px;
+    }
+  }
+  @media (min-width: 1024px) {
+    .minka-container {
+      max-width: 720px;
+    }
+  }
+}
+
+/* Movimiento breve y calmado: 200-250ms. Nunca "demo tecnológica llamativa". */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

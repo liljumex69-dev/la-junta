@@ -7,8 +7,9 @@ export default async function CodigoPage({
   searchParams,
 }: PageProps<"/registro/codigo">) {
   const params = await searchParams;
-  const tel = typeof params.tel === "string" ? params.tel : "987 654 321";
+  const tel = typeof params.tel === "string" ? params.tel : "987654321";
   const invita = typeof params.invita === "string" ? params.invita : undefined;
+  const junta = typeof params.junta === "string" ? params.junta : undefined;
 
   const formateado = tel.replace(/(\d{3})(\d{3})(\d{3})/, "$1 $2 $3");
 
@@ -20,7 +21,11 @@ export default async function CodigoPage({
       paso={2}
       totalPasos={3}
     >
-      <CodigoForm telefono={formateado} invitadoPor={invita} />
+      <CodigoForm
+        telefono={formateado}
+        invitadoPor={invita}
+        codigoJunta={junta}
+      />
     </AuthShell>
   );
 }

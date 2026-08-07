@@ -8,40 +8,67 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/minka/spinner";
+import { SCORE_INICIAL, nivelDe } from "@/lib/minka/niveles";
+import { useSesion } from "@/lib/minka/prototipo/sesion";
 
 /**
  * Último paso del registro: cómo se va a llamar la persona dentro de sus juntas.
  *
- * Aquí también se explica que el historial parte neutral. Es importante decirlo desde
- * el inicio: el score no es un castigo de entrada, es algo que se construye.
+ * Aquí se crea la cuenta de verdad en el estado del prototipo, con score neutral e
+ * historial vacío. Si venía de un enlace de invitación, además queda inscrita en la
+ * junta sin tener que buscar dónde escribir el código.
  */
-export function PerfilForm({ invitadoPor }: { invitadoPor?: string }) {
+export function PerfilForm({
+  telefono,
+  codigoJunta,
+  invitadoPor,
+}: {
+  telefono?: string;
+  codigoJunta?: string;
+  invitadoPor?: string;
+}) {
   const router = useRouter();
+  const { registrar, buscarPorCodigo, unirseAJunta } = useSesion();
+
   const [nombre, setNombre] = useState("");
   const [guardando, setGuardando] = useState(false);
   const [listo, setListo] = useState(false);
+  const [juntaNombre, setJuntaNombre] = useState<string | null>(null);
 
   const valido = nombre.trim().length >= 3;
+  const nivelInicial = nivelDe(SCORE_INICIAL);
 
   async function guardar(e: React.FormEvent) {
     e.preventDefault();
     if (!valido || guardando) return;
     setGuardando(true);
 
-    // TODO: conectar a smart contract — registrar al usuario on-chain con score
-    // neutral inicial y, si existe `invitadoPor`, guardar la referencia de quién
-    // lo invitó para el cálculo de "personas distintas" del historial de ambos.
+    // TODO: conectar a backend/contrato — crear la cuenta y derivar la wallet en
+    // segundo plano, con score neutral inicial y la referencia de quién invitó.
     await new Promise((r) => setTimeout(r, 900));
+
+    registrar({
+      nombre,
+      telefono: telefono || "900 000 000",
+    });
+
+    // Si llegó por un enlace de invitación, entra directo a la junta.
+    if (codigoJunta) {
+      const junta = buscarPorCodigo(codigoJunta);
+      if (junta) {
+        unirseAJunta(junta);
+        setJuntaNombre(junta.nombre);
+      }
+    }
 
     setGuardando(false);
     setListo(true);
   }
 
   // Momento de éxito: un instante visual positivo antes de continuar.
-  // El sistema de diseño lo considera tan importante como el estado de carga.
   useEffect(() => {
     if (!listo) return;
-    const id = window.setTimeout(() => router.push("/inicio"), 1400);
+    const id = window.setTimeout(() => router.push("/inicio"), 1600);
     return () => window.clearTimeout(id);
   }, [listo, router]);
 
@@ -58,9 +85,11 @@ export function PerfilForm({ invitadoPor }: { invitadoPor?: string }) {
         <h2 className="mt-5 text-h2 font-semibold text-minka-text">
           Tu cuenta está lista
         </h2>
-        <p className="mt-2 text-body text-minka-muted">
-          Bienvenida a Minka, {nombre.trim().split(" ")[0]}. Te llevamos a tu
-          inicio.
+        <p className="mt-2 max-w-sm text-body text-minka-muted">
+          Bienvenida a Minka, {nombre.trim().split(" ")[0]}.
+          {juntaNombre
+            ? ` Ya quedaste dentro de “${juntaNombre}”.`
+            : " Te llevamos a tu inicio."}
         </p>
       </div>
     );
@@ -102,8 +131,10 @@ export function PerfilForm({ invitadoPor }: { invitadoPor?: string }) {
           aria-hidden="true"
         />
         <p className="text-body text-minka-text">
-          Tu historial empieza en cero, ni bien ni mal. Con cada cuota puntual sube,
-          y mientras más sube, menos garantía te piden para cobrar temprano.
+          Empiezas en nivel{" "}
+          <strong className="font-semibold">{nivelInicial.nombre}</strong>, sin nada en
+          contra. Con cada cuota puntual tu historial sube, y te van pidiendo menos
+          garantía para cobrar temprano.
         </p>
       </div>
 

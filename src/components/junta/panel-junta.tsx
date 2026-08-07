@@ -18,6 +18,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { CompartirJunta } from "@/components/junta/compartir-junta";
 import { ETIQUETA_FRECUENCIA, soles, turnoOrdinal } from "@/lib/minka/format";
 import {
   calcularAporteDelCiclo,
@@ -26,7 +27,6 @@ import {
   participanteDelTurno,
   progresoDelCiclo,
 } from "@/lib/minka/rules";
-import { claveCiclo, useEstadoPrototipo } from "@/lib/minka/prototipo-estado";
 import type { EstadoPagoCuota, Junta, Participante } from "@/lib/minka/types";
 
 const ETIQUETA_ESTADO: Record<
@@ -54,22 +54,13 @@ export function PanelJunta({
   junta: Junta;
   yo: Participante;
 }) {
-  const { tiene, listo } = useEstadoPrototipo();
+  // El estado de la junta ya vive en la sesión, así que el participante es la
+  // única fuente de verdad: no hace falta cruzarlo con banderas aparte.
+  const yaAporte = yo.estadoPago === "pagado" || yo.estadoPago === "tarde";
+  const meTocaCobrar = junta.cicloActual === yo.turno && !yo.yaCobro;
+  const enFormacion = junta.estado === "formandose";
 
-  const clave = claveCiclo(junta.id, junta.cicloActual);
-  const yaAporteGuardado = tiene("aportado", clave);
-  const yaCobreGuardado = tiene("cobrado", clave);
-
-  const yaAporte =
-    yo.estadoPago === "pagado" || yo.estadoPago === "tarde" || yaAporteGuardado;
-  const meTocaCobrar = junta.cicloActual === yo.turno && !yaCobreGuardado;
-
-  const progresoBase = progresoDelCiclo(junta);
-  const progreso = {
-    ...progresoBase,
-    aportaron: progresoBase.aportaron + (yaAporteGuardado ? 1 : 0),
-    faltan: progresoBase.faltan - (yaAporteGuardado ? 1 : 0),
-  };
+  const progreso = progresoDelCiclo(junta);
 
   const pozo = calcularPozo(junta);
   const aporte = calcularAporteDelCiclo(junta, yo);
@@ -81,7 +72,8 @@ export function PanelJunta({
     yo.score,
     junta.modo
   );
-  const garantiaBloqueada = tiene("garantiaBloqueada", junta.id);
+  // Quien ya cobró tiene la garantía bloqueada hasta terminar de aportar.
+  const garantiaBloqueada = yo.yaCobro;
 
   return (
     <div className="space-y-6">
@@ -107,23 +99,30 @@ export function PanelJunta({
         <p className="mt-2 text-body text-minka-muted">
           {soles(junta.cuota)} ·{" "}
           {ETIQUETA_FRECUENCIA[junta.frecuencia].toLowerCase()} ·{" "}
-          {junta.totalParticipantes} personas · ciclo {junta.cicloActual} de{" "}
-          {junta.totalParticipantes}
+          {junta.totalParticipantes} personas ·{" "}
+          {enFormacion
+            ? "todavía juntando gente"
+            : `ciclo ${junta.cicloActual} de ${junta.totalParticipantes}`}
         </p>
       </div>
 
       {/* Lo que le toca hacer ahora — la razón por la que abrió la app */}
       <Card
         className={
-          meTocaCobrar
-            ? "border-2 border-minka-success"
-            : !yaAporte
-              ? "border-2 border-minka-secondary"
-              : undefined
+          enFormacion
+            ? undefined
+            : meTocaCobrar
+              ? "border-2 border-minka-success"
+              : !yaAporte
+                ? "border-2 border-minka-secondary"
+                : undefined
         }
       >
         <CardContent>
-          {meTocaCobrar ? (
+          {enFormacion ? (
+            /* Junta recién creada: todavía no hay ciclo, lo que toca es invitar */
+            <CompartirJunta junta={junta} />
+          ) : meTocaCobrar ? (
             <>
               <p className="flex items-center gap-2 text-h3 font-semibold text-minka-success">
                 <HandCoins size={28} weight="fill" aria-hidden="true" />
@@ -182,11 +181,12 @@ export function PanelJunta({
       <section>
         <div className="flex items-baseline justify-between gap-3">
           <h2 className="text-h2 font-semibold text-minka-text">
-            Este ciclo
+            {enFormacion ? "Quiénes van entrando" : "Este ciclo"}
           </h2>
           <span className="text-body text-minka-muted">
-            {listo ? progreso.aportaron : progresoBase.aportaron} de{" "}
-            {progreso.total} aportaron
+            {enFormacion
+              ? `${junta.participantes.length} de ${junta.totalParticipantes}`
+              : `${progreso.aportaron} de ${progreso.total} aportaron`}
           </span>
         </div>
 
@@ -195,8 +195,7 @@ export function PanelJunta({
             .sort((a, b) => a.turno - b.turno)
             .map((p) => {
               const soyYo = p.id === yo.id;
-              const estado: EstadoPagoCuota =
-                soyYo && yaAporteGuardado ? "pagado" : p.estadoPago;
+              const estado: EstadoPagoCuota = p.estadoPago;
               const info = ETIQUETA_ESTADO[estado];
               const cobraAhora = p.turno === junta.cicloActual;
 
@@ -222,13 +221,22 @@ export function PanelJunta({
                       {soyYo ? "Tú" : p.nombre}
                     </span>
                     <span className="block text-support text-minka-muted">
-                      Turno {turnoOrdinal(p.turno)}
-                      {cobraAhora ? " · cobra este ciclo" : ""}
+                      {enFormacion && junta.asignacionTurnos === "sorteo"
+                        ? "Turno por sortear"
+                        : `Turno ${turnoOrdinal(p.turno)}`}
+                      {cobraAhora && !enFormacion ? " · cobra este ciclo" : ""}
+                      {p.id === junta.organizadorId ? " · organiza" : ""}
                       {p.avaladoPor ? ` · avalado por ${p.avaladoPor}` : ""}
                     </span>
                   </span>
 
-                  <Badge variant={info.variante}>{info.texto}</Badge>
+                  {/* Mientras la junta se está llenando no hay ciclo, así que no
+                      tiene sentido mostrar estado de pago. */}
+                  {enFormacion ? (
+                    <Badge variant="outline">Dentro</Badge>
+                  ) : (
+                    <Badge variant={info.variante}>{info.texto}</Badge>
+                  )}
                 </li>
               );
             })}

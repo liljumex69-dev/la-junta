@@ -5,14 +5,11 @@ import { useState } from "react";
 import {
   CaretLeft,
   CheckCircle,
-  Copy,
   Info,
   Minus,
   Plus,
   ShareNetwork,
-  WhatsappLogo,
 } from "@phosphor-icons/react/ssr";
-import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -20,11 +17,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { OpcionRadio } from "@/components/minka/opcion-radio";
 import { Spinner } from "@/components/minka/spinner";
+import { CompartirJunta } from "@/components/junta/compartir-junta";
 import { ETIQUETA_FRECUENCIA, soles } from "@/lib/minka/format";
 import { LIMITES_PLAN, calcularPrima, puedeCrearJuntaPublica } from "@/lib/minka/rules";
+import { useSesion } from "@/lib/minka/prototipo/sesion";
 import type {
   AsignacionTurnos,
   FrecuenciaCuota,
+  Junta,
   ModoJunta,
   VisibilidadJunta,
 } from "@/lib/minka/types";
@@ -44,16 +44,12 @@ import type {
 const FRECUENCIAS: FrecuenciaCuota[] = ["semanal", "quincenal", "mensual"];
 const MONTOS_SUGERIDOS = [50, 100, 200, 300];
 
-export function CrearJuntaWizard({
-  juntasCompletadas,
-  juntasActivas,
-  plan,
-}: {
-  juntasCompletadas: number;
-  juntasActivas: number;
-  plan: "gratuito" | "pro";
-}) {
-  const limites = LIMITES_PLAN[plan];
+export function CrearJuntaWizard() {
+  const { usuario, misJuntas, crearJunta } = useSesion();
+
+  const juntasCompletadas = usuario?.juntasCompletadas ?? 0;
+  const juntasActivas = misJuntas.length;
+  const limites = LIMITES_PLAN[usuario?.plan ?? "gratuito"];
   const puedePublica = puedeCrearJuntaPublica(juntasCompletadas);
 
   const [paso, setPaso] = useState(0);
@@ -65,7 +61,7 @@ export function CrearJuntaWizard({
   const [modo, setModo] = useState<ModoJunta>("protegido");
   const [turnos, setTurnos] = useState<AsignacionTurnos>("sorteo");
   const [creando, setCreando] = useState(false);
-  const [codigo, setCodigo] = useState<string | null>(null);
+  const [creada, setCreada] = useState<Junta | null>(null);
 
   // Una junta pública no admite modo tradicional ni turnos manuales.
   const modoEfectivo: ModoJunta = visibilidad === "publica" ? "protegido" : modo;
@@ -105,26 +101,27 @@ export function CrearJuntaWizard({
     if (creando) return;
     setCreando(true);
 
-    // TODO: conectar a smart contract — desplegar la junta en Arbitrum con estos
-    // parámetros (cuota, frecuencia, número de turnos, modo, visibilidad, método de
-    // asignación de turnos) y devolver la dirección del contrato y el código de invitación.
     await new Promise((r) => setTimeout(r, 1100));
 
-    setCodigo(
-      nombre
-        .toUpperCase()
-        .replace(/[^A-Z]/g, "")
-        .slice(0, 5)
-        .padEnd(5, "X") + participantes
-    );
+    const junta = crearJunta({
+      nombre,
+      cuota,
+      frecuencia,
+      totalParticipantes: participantes,
+      modo: modoEfectivo,
+      visibilidad,
+      asignacionTurnos: turnosEfectivos,
+    });
+
+    setCreada(junta);
     setCreando(false);
   }
 
   const primaTurno1 = calcularPrima(1, participantes, cuota, modoEfectivo);
 
-  // Pantalla final: la junta ya existe, ahora hay que llenarla.
-  if (codigo) {
-    const enlace = `https://minka.pe/unirse?codigo=${codigo}`;
+  // Pantalla final: la junta ya existe y ya aparece en "Mis juntas". Lo que queda
+  // es llenarla, así que se reutiliza el mismo bloque de invitación del panel.
+  if (creada) {
     return (
       <div className="space-y-6">
         <div className="flex flex-col items-center py-6 text-center" role="status">
@@ -135,53 +132,19 @@ export function CrearJuntaWizard({
             Tu junta está creada
           </h2>
           <p className="mt-2 text-body text-minka-muted">
-            Ahora invita a las {participantes - 1} personas que faltan. La junta
-            arranca cuando estén todas.
+            Ya aparece en tus juntas. Ahora invita a quienes faltan.
           </p>
         </div>
 
-        <div className="rounded-lg border-2 border-minka-border bg-minka-surface p-5 text-center">
-          <p className="text-support font-semibold text-minka-muted">
-            Código para compartir
-          </p>
-          <p className="mt-2 text-[32px] font-semibold tracking-[0.15em] text-minka-text">
-            {codigo}
-          </p>
+        <div className="rounded-lg border border-minka-border bg-minka-surface p-5">
+          <CompartirJunta junta={creada} />
         </div>
 
         <div className="space-y-3">
-          <Button
-            size="lg"
-            className="w-full"
-            onClick={() => {
-              // TODO: conectar a smart contract — el enlace debe apuntar a la junta
-              // real desplegada, no a un código generado en el cliente.
-              window.open(
-                `https://wa.me/?text=${encodeURIComponent(
-                  `Te invito a nuestra junta "${nombre}" en Minka. Entra con el código ${codigo}: ${enlace}`
-                )}`,
-                "_blank"
-              );
-            }}
-          >
-            <WhatsappLogo size={24} weight="fill" aria-hidden="true" />
-            Invitar por WhatsApp
+          <Button asChild size="lg" className="w-full">
+            <Link href={`/junta/${creada.id}`}>Ver mi junta</Link>
           </Button>
-
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-full"
-            onClick={() => {
-              navigator.clipboard?.writeText(enlace);
-              toast.success("Enlace copiado");
-            }}
-          >
-            <Copy size={22} weight="duotone" aria-hidden="true" />
-            Copiar enlace
-          </Button>
-
-          <Button asChild size="lg" variant="ghost" className="w-full">
+          <Button asChild size="lg" variant="outline" className="w-full">
             <Link href="/inicio">Ir a mis juntas</Link>
           </Button>
         </div>

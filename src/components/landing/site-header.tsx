@@ -43,12 +43,20 @@ export function SiteHeader() {
               {e.label}
             </Link>
           ))}
-          <Button asChild className="ml-3">
+          {/* "Ingresar" va antes que "Crear cuenta": sin él, quien ya tiene cuenta
+              cree que tiene que registrarse de nuevo. */}
+          <Button asChild variant="outline" className="ml-3">
+            <Link href="/entrar">Ingresar</Link>
+          </Button>
+          <Button asChild className="ml-2">
             <Link href="/registro">Crear cuenta</Link>
           </Button>
         </nav>
 
         <div className="flex items-center gap-2 md:hidden">
+          <Button asChild size="sm" variant="outline">
+            <Link href="/entrar">Ingresar</Link>
+          </Button>
           <Button asChild size="sm">
             <Link href="/registro">Crear cuenta</Link>
           </Button>
@@ -70,7 +78,7 @@ export function SiteHeader() {
           id="menu-movil"
           className="border-t border-minka-border bg-minka-bg px-4 pb-4 md:hidden"
         >
-          {ENLACES.map((e) => (
+          {[...ENLACES, { href: "/entrar", label: "Ya tengo cuenta" }].map((e) => (
             <Link
               key={e.href}
               href={e.href}

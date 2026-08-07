@@ -6,18 +6,21 @@ import {
   CheckCircle,
   Clock,
   Plus,
+  Trash,
   UsersThree,
 } from "@phosphor-icons/react/ssr";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/minka/spinner";
 
 interface Contacto {
   id: string;
   nombre: string;
   iniciales: string;
-  confirmado: boolean;
 }
 
 /**
@@ -28,10 +31,20 @@ interface Contacto {
  * resolver. En su lugar, 2 o 3 personas que ya la conocen confirman que es ella —
  * que es exactamente como funciona la confianza en una junta de verdad.
  */
-export function RecuperarCuenta({ contactos }: { contactos: Contacto[] }) {
+export function RecuperarCuenta({
+  contactos,
+  onAgregar,
+  onQuitar,
+}: {
+  contactos: Contacto[];
+  onAgregar: (nombre: string) => void;
+  onQuitar: (id: string) => void;
+}) {
   const [enCurso, setEnCurso] = useState(false);
   const [iniciando, setIniciando] = useState(false);
   const [confirmados, setConfirmados] = useState<string[]>([]);
+  const [agregando, setAgregando] = useState(false);
+  const [nuevoNombre, setNuevoNombre] = useState("");
 
   const requeridos = Math.min(2, contactos.length);
   const suficientes = confirmados.length >= requeridos;
@@ -102,16 +115,31 @@ export function RecuperarCuenta({ contactos }: { contactos: Contacto[] }) {
                       {c.nombre}
                     </span>
 
-                    {!enCurso ? null : confirmo ? (
-                      <span className="flex items-center gap-1.5 text-support font-semibold text-minka-success">
-                        <CheckCircle size={22} weight="fill" aria-hidden="true" />
-                        Confirmó
-                      </span>
+                    {enCurso ? (
+                      confirmo ? (
+                        <span className="flex items-center gap-1.5 text-support font-semibold text-minka-success">
+                          <CheckCircle size={22} weight="fill" aria-hidden="true" />
+                          Confirmó
+                        </span>
+                      ) : (
+                        <span className="flex items-center gap-1.5 text-support font-semibold text-minka-muted">
+                          <Clock size={22} weight="duotone" aria-hidden="true" />
+                          Esperando
+                        </span>
+                      )
                     ) : (
-                      <span className="flex items-center gap-1.5 text-support font-semibold text-minka-muted">
-                        <Clock size={22} weight="duotone" aria-hidden="true" />
-                        Esperando
-                      </span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Quitar a ${c.nombre} de tus contactos de confianza`}
+                        onClick={() => {
+                          onQuitar(c.id);
+                          toast.success(`${c.nombre} ya no es contacto de confianza`);
+                        }}
+                      >
+                        <Trash size={20} weight="duotone" />
+                      </Button>
                     )}
                   </CardContent>
                 </Card>
@@ -120,11 +148,78 @@ export function RecuperarCuenta({ contactos }: { contactos: Contacto[] }) {
           })}
         </ul>
 
+        {contactos.length === 0 && !enCurso ? (
+          <p className="mt-4 rounded-lg border border-minka-border bg-minka-surface p-4 text-body text-minka-muted">
+            Todavía no tienes contactos de confianza. Agrega al menos dos personas
+            que te conozcan: son quienes te van a devolver el acceso si pierdes tu
+            celular.
+          </p>
+        ) : null}
+
         {!enCurso ? (
-          <Button variant="outline" size="lg" className="mt-4 w-full">
-            <Plus size={22} weight="bold" aria-hidden="true" />
-            Agregar otro contacto
-          </Button>
+          agregando ? (
+            <form
+              className="mt-4 space-y-3"
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (nuevoNombre.trim().length < 3) return;
+                onAgregar(nuevoNombre);
+                toast.success(`${nuevoNombre.trim()} agregado a tus contactos`);
+                setNuevoNombre("");
+                setAgregando(false);
+              }}
+            >
+              <div>
+                <Label htmlFor="nuevo-contacto" className="text-body font-semibold">
+                  Nombre de la persona
+                </Label>
+                <Input
+                  id="nuevo-contacto"
+                  className="mt-2"
+                  autoFocus
+                  placeholder="Carmen Loayza"
+                  value={nuevoNombre}
+                  onChange={(e) => setNuevoNombre(e.target.value)}
+                  aria-describedby="ayuda-contacto"
+                />
+                <p id="ayuda-contacto" className="mt-2 text-support text-minka-muted">
+                  Debe ser alguien que te reconozca sin dudar. Le vamos a pedir que
+                  confirme que eres tú.
+                </p>
+              </div>
+              <div className="flex gap-3">
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="flex-1"
+                  disabled={nuevoNombre.trim().length < 3}
+                >
+                  Agregar
+                </Button>
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="outline"
+                  onClick={() => {
+                    setAgregando(false);
+                    setNuevoNombre("");
+                  }}
+                >
+                  Cancelar
+                </Button>
+              </div>
+            </form>
+          ) : (
+            <Button
+              variant="outline"
+              size="lg"
+              className="mt-4 w-full"
+              onClick={() => setAgregando(true)}
+            >
+              <Plus size={22} weight="bold" aria-hidden="true" />
+              Agregar otro contacto
+            </Button>
+          )
         ) : null}
       </section>
 

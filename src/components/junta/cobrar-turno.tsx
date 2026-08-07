@@ -24,7 +24,7 @@ import {
   factorGarantiaPorScore,
   nivelDeConfianza,
 } from "@/lib/minka/rules";
-import { claveCiclo, useEstadoPrototipo } from "@/lib/minka/prototipo-estado";
+import { useSesion } from "@/lib/minka/prototipo/sesion";
 import type { Junta, Participante } from "@/lib/minka/types";
 
 /**
@@ -48,7 +48,7 @@ export function CobrarTurno({
   saldoDisponible: number;
 }) {
   const router = useRouter();
-  const { marcar, tiene } = useEstadoPrototipo();
+  const { cobrarTurno } = useSesion();
   const [procesando, setProcesando] = useState(false);
   const [cobrado, setCobrado] = useState(false);
 
@@ -60,7 +60,7 @@ export function CobrarTurno({
     yo.score,
     junta.modo
   );
-  const yaTieneGarantia = tiene("garantiaBloqueada", junta.id);
+  const yaTieneGarantia = yo.yaCobro;
   const nivel = nivelDeConfianza(yo.score);
 
   const necesitaGarantia = junta.modo === "protegido" && garantiaRequerida > 0;
@@ -78,8 +78,7 @@ export function CobrarTurno({
     // esa decisión, nunca la toma.
     await new Promise((r) => setTimeout(r, 1300));
 
-    marcar("garantiaBloqueada", junta.id);
-    marcar("cobrado", claveCiclo(junta.id, junta.cicloActual));
+    cobrarTurno(junta.id);
     setProcesando(false);
     setCobrado(true);
   }

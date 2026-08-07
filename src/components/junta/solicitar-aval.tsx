@@ -15,7 +15,6 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Spinner } from "@/components/minka/spinner";
 import { soles, turnoOrdinal } from "@/lib/minka/format";
 import { ETIQUETA_NIVEL, nivelDeConfianza } from "@/lib/minka/rules";
-import { useEstadoPrototipo } from "@/lib/minka/prototipo-estado";
 import type { Junta, Participante } from "@/lib/minka/types";
 
 interface PosibleAval {
@@ -45,7 +44,6 @@ export function SolicitarAval({
   yo: Participante;
   candidatos: PosibleAval[];
 }) {
-  const { marcar } = useEstadoPrototipo();
   const [elegido, setElegido] = useState<string | null>(null);
   const [entiendo, setEntiendo] = useState(false);
   const [enviando, setEnviando] = useState(false);
@@ -63,7 +61,6 @@ export function SolicitarAval({
     // persona acepta; hasta entonces no se toca nada de su dinero.
     await new Promise((r) => setTimeout(r, 1100));
 
-    marcar("avalSolicitado", `${junta.id}:${persona.id}`);
     setEnviando(false);
     setEnviado(true);
   }

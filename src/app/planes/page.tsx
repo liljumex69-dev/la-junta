@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 import {
   CaretLeft,
@@ -11,10 +13,10 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/minka/logo";
+import { BotonMejorar } from "@/components/planes/boton-mejorar";
 import { soles } from "@/lib/minka/format";
 import { LIMITES_PLAN } from "@/lib/minka/rules";
-
-export const metadata = { title: "Planes — Minka" };
+import { useSesion } from "@/lib/minka/prototipo/sesion";
 
 const G = LIMITES_PLAN.gratuito;
 const P = LIMITES_PLAN.pro;
@@ -77,18 +79,28 @@ const COMPARACION: Array<{
 ];
 
 export default function PlanesPage() {
+  const { usuario } = useSesion();
+  const esPro = usuario?.plan === "pro";
+
   return (
     <div className="flex min-h-dvh flex-col">
       <header className="sticky top-0 z-40 border-b border-minka-border bg-minka-bg/95 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-[720px] items-center gap-2 px-4">
           <Link
-            href="/inicio"
+            href={usuario ? "/inicio" : "/"}
             aria-label="Volver"
             className="touch-target -ml-3 grid place-items-center rounded-md text-minka-text transition-colors hover:bg-[#ece4d8]"
           >
             <CaretLeft size={26} weight="bold" />
           </Link>
-          <Logo size={30} />
+          {/* El logo siempre lleva al inicio: es lo que la gente espera al tocarlo. */}
+          <Link
+            href={usuario ? "/inicio" : "/"}
+            aria-label="Minka, ir al inicio"
+            className="flex"
+          >
+            <Logo size={30} />
+          </Link>
         </div>
       </header>
 
@@ -136,7 +148,7 @@ export default function PlanesPage() {
                 <h2 className="text-h3 font-semibold text-minka-text">
                   Gratuito
                 </h2>
-                <Badge variant="success">Tu plan</Badge>
+                {!esPro ? <Badge variant="success">Tu plan</Badge> : null}
               </div>
               <p className="mt-2 text-[32px] leading-tight font-semibold text-minka-text">
                 S/ 0
@@ -149,9 +161,12 @@ export default function PlanesPage() {
 
           <Card className="border-2 border-minka-secondary">
             <CardContent>
-              <h2 className="text-h3 font-semibold text-minka-text">
-                Organizador Pro
-              </h2>
+              <div className="flex items-center justify-between gap-3">
+                <h2 className="text-h3 font-semibold text-minka-text">
+                  Organizador Pro
+                </h2>
+                {esPro ? <Badge variant="success">Tu plan</Badge> : null}
+              </div>
               <p className="mt-2 text-[32px] leading-tight font-semibold text-minka-text">
                 S/ 12{" "}
                 <span className="text-body font-normal text-minka-muted">
@@ -162,11 +177,7 @@ export default function PlanesPage() {
                 Para quien organiza varias juntas o maneja montos más altos. Puedes
                 repartir el costo entre los participantes.
               </p>
-              <Button size="lg" className="mt-5 w-full">
-                Probar Organizador Pro
-              </Button>
-              {/* TODO: conectar a smart contract — o a la pasarela de pago del plan.
-                  El plan es un cobro de servicio de Minka, no toca el pozo de ninguna junta. */}
+              <BotonMejorar />
             </CardContent>
           </Card>
         </div>

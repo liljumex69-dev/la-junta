@@ -1,21 +1,22 @@
-import { CrearJuntaWizard } from "@/components/junta/crear-junta-wizard";
-import { JUNTAS, USUARIO_ACTUAL } from "@/lib/minka/mock-data";
+"use client";
 
-export const metadata = { title: "Crear junta — Minka" };
+import Link from "next/link";
+import { CaretLeft } from "@phosphor-icons/react/ssr";
+
+import { CrearJuntaWizard } from "@/components/junta/crear-junta-wizard";
 
 export default function CrearPage() {
-  // TODO: conectar a smart contract — leer del contrato el historial del organizador
-  // (juntas completadas) y sus juntas activas para aplicar los topes de plan.
-  const juntasActivas = JUNTAS.filter((j) => j.estado === "activa").length;
-
   return (
     <div className="space-y-6">
+      <Link
+        href="/inicio"
+        className="touch-target -ml-3 flex w-fit items-center gap-1 rounded-md pr-3 text-body font-semibold text-minka-text transition-colors hover:bg-[#ece4d8]"
+      >
+        <CaretLeft size={22} weight="bold" aria-hidden="true" />
+        Inicio
+      </Link>
       <h1 className="text-display font-semibold text-minka-text">Crear junta</h1>
-      <CrearJuntaWizard
-        juntasCompletadas={USUARIO_ACTUAL.juntasCompletadas}
-        juntasActivas={juntasActivas}
-        plan={USUARIO_ACTUAL.plan}
-      />
+      <CrearJuntaWizard />
     </div>
   );
 }

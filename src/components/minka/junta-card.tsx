@@ -26,10 +26,12 @@ export function JuntaCard({
   junta: Junta;
   yo: Participante;
 }) {
-  const meTocaCobrar = junta.cicloActual === yo.turno;
+  const enFormacion = junta.estado === "formandose";
+  const meTocaCobrar = !enFormacion && junta.cicloActual === yo.turno;
   const yaAporte = yo.estadoPago === "pagado" || yo.estadoPago === "tarde";
   const progreso = progresoDelCiclo(junta);
   const pozo = calcularPozo(junta);
+  const faltanPersonas = junta.totalParticipantes - junta.participantes.length;
 
   return (
     <Card className="transition-shadow hover:shadow-elevated">
@@ -65,7 +67,8 @@ export function JuntaCard({
           />
         </Link>
 
-        {/* Estado del ciclo actual */}
+        {/* Mientras la junta se llena no hay ciclo: lo que importa es cuánta gente
+            falta, no cuántos aportaron. */}
         <div className="mt-4 flex items-center gap-2">
           <UsersThree
             size={22}
@@ -74,28 +77,48 @@ export function JuntaCard({
             aria-hidden="true"
           />
           <span className="text-support text-minka-muted">
-            {progreso.aportaron} de {progreso.total} ya aportaron este ciclo
+            {enFormacion
+              ? `${junta.participantes.length} de ${junta.totalParticipantes} personas ya entraron`
+              : `${progreso.aportaron} de ${progreso.total} ya aportaron este ciclo`}
           </span>
         </div>
         <div
           className="mt-2 h-2 w-full overflow-hidden rounded-sm bg-[#e9e0d2]"
           role="progressbar"
-          aria-valuenow={progreso.aportaron}
+          aria-valuenow={enFormacion ? junta.participantes.length : progreso.aportaron}
           aria-valuemin={0}
-          aria-valuemax={progreso.total}
-          aria-label={`${progreso.aportaron} de ${progreso.total} participantes ya aportaron`}
+          aria-valuemax={enFormacion ? junta.totalParticipantes : progreso.total}
+          aria-label={
+            enFormacion
+              ? `${junta.participantes.length} de ${junta.totalParticipantes} personas ya entraron`
+              : `${progreso.aportaron} de ${progreso.total} participantes ya aportaron`
+          }
         >
           <span
-            className="block h-full rounded-sm bg-minka-success transition-[width] duration-200"
+            className={
+              "block h-full rounded-sm transition-[width] duration-200 " +
+              (enFormacion ? "bg-minka-secondary" : "bg-minka-success")
+            }
             style={{
-              width: `${(progreso.aportaron / progreso.total) * 100}%`,
+              width: `${
+                enFormacion
+                  ? (junta.participantes.length / junta.totalParticipantes) * 100
+                  : (progreso.aportaron / progreso.total) * 100
+              }%`,
             }}
           />
         </div>
 
         {/* Lo que le toca al usuario ahora */}
         <div className="mt-4 rounded-md border border-minka-border bg-minka-bg p-3">
-          {meTocaCobrar ? (
+          {enFormacion ? (
+            <p className="flex items-center gap-2 text-body text-minka-text">
+              <Lightning size={22} weight="duotone" color="#E38E20" aria-hidden="true" />
+              {faltanPersonas > 0
+                ? `Faltan ${faltanPersonas} ${faltanPersonas === 1 ? "persona" : "personas"} para empezar`
+                : "Grupo completo, ya pueden empezar"}
+            </p>
+          ) : meTocaCobrar ? (
             <p className="flex items-center gap-2 text-body font-semibold text-minka-success">
               <HandCoins size={24} weight="fill" aria-hidden="true" />
               Te toca cobrar {soles(pozo)}

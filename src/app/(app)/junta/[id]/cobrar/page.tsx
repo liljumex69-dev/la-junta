@@ -1,30 +1,19 @@
-import { notFound } from "next/navigation";
+"use client";
 
+import { CargadorJunta } from "@/components/junta/cargador-junta";
 import { CobrarTurno } from "@/components/junta/cobrar-turno";
-import {
-  SALDO_GARANTIA_DISPONIBLE,
-  buscarJunta,
-  miParticipacion,
-} from "@/lib/minka/mock-data";
+import { SALDO_GARANTIA_DISPONIBLE } from "@/lib/minka/mock-data";
 
-export const metadata = { title: "Cobrar mi turno — Minka" };
-
-export default async function CobrarPage({
-  params,
-}: PageProps<"/junta/[id]/cobrar">) {
-  const { id } = await params;
-
-  const junta = buscarJunta(id);
-  if (!junta) notFound();
-
-  const yo = miParticipacion(junta);
-  if (!yo) notFound();
-
+export default function CobrarPage() {
   return (
-    <CobrarTurno
-      junta={junta}
-      yo={yo}
-      saldoDisponible={SALDO_GARANTIA_DISPONIBLE}
-    />
+    <CargadorJunta>
+      {({ junta, yo }) => (
+        <CobrarTurno
+          junta={junta}
+          yo={yo}
+          saldoDisponible={SALDO_GARANTIA_DISPONIBLE}
+        />
+      )}
+    </CargadorJunta>
   );
 }

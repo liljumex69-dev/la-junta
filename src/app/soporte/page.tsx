@@ -18,7 +18,10 @@ export default function SoportePage() {
           >
             <CaretLeft size={26} weight="bold" />
           </Link>
-          <Logo size={30} />
+          {/* El logo lleva al inicio desde cualquier pantalla. */}
+          <Link href="/inicio" aria-label="Minka, ir al inicio" className="flex">
+            <Logo size={30} />
+          </Link>
         </div>
       </header>
 

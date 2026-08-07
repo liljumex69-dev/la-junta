@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/minka/spinner";
 import { ETIQUETA_FRECUENCIA, soles, turnoOrdinal } from "@/lib/minka/format";
 import { calcularAporteDelCiclo, repartoDePrima } from "@/lib/minka/rules";
-import { claveCiclo, useEstadoPrototipo } from "@/lib/minka/prototipo-estado";
+import { useSesion } from "@/lib/minka/prototipo/sesion";
 import type { Junta, Participante } from "@/lib/minka/types";
 
 /**
@@ -28,7 +28,7 @@ export function AportarCuota({
   yo: Participante;
 }) {
   const router = useRouter();
-  const { marcar } = useEstadoPrototipo();
+  const { aportarCuota } = useSesion();
   const [pagando, setPagando] = useState(false);
   const [listo, setListo] = useState(false);
 
@@ -45,7 +45,7 @@ export function AportarCuota({
     // participante y repartir la prima entre el fondo colectivo y el fee de plataforma.
     await new Promise((r) => setTimeout(r, 1100));
 
-    marcar("aportado", claveCiclo(junta.id, junta.cicloActual));
+    aportarCuota(junta.id);
     setPagando(false);
     setListo(true);
   }

@@ -21,9 +21,11 @@ const LARGO = 6;
 export function CodigoForm({
   telefono,
   invitadoPor,
+  codigoJunta,
 }: {
   telefono: string;
   invitadoPor?: string;
+  codigoJunta?: string;
 }) {
   const router = useRouter();
   const [digitos, setDigitos] = useState<string[]>(Array(LARGO).fill(""));
@@ -67,8 +69,9 @@ export function CodigoForm({
     // por contactos de confianza (ver /recuperar).
     await new Promise((r) => setTimeout(r, 900));
 
-    const params = new URLSearchParams();
+    const params = new URLSearchParams({ tel: telefono.replace(/\D/g, "") });
     if (invitadoPor) params.set("invita", invitadoPor);
+    if (codigoJunta) params.set("junta", codigoJunta);
     router.push(`/registro/perfil?${params.toString()}`);
   }
 

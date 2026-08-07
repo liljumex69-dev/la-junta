@@ -1,16 +1,26 @@
+"use client";
+
+import Link from "next/link";
+import { useSearchParams } from "next/navigation";
+import { Suspense } from "react";
+import { CaretLeft } from "@phosphor-icons/react/ssr";
+
 import { UnirseJunta } from "@/components/junta/unirse-junta";
-import { USUARIO_ACTUAL } from "@/lib/minka/mock-data";
 
-export const metadata = { title: "Unirme a una junta — Minka" };
-
-export default async function UnirsePage({
-  searchParams,
-}: PageProps<"/unirse">) {
-  const params = await searchParams;
-  const codigo = typeof params.codigo === "string" ? params.codigo : undefined;
+function Contenido() {
+  const params = useSearchParams();
+  const codigo = params.get("codigo") ?? undefined;
 
   return (
     <div className="space-y-6">
+      <Link
+        href="/inicio"
+        className="touch-target -ml-3 flex w-fit items-center gap-1 rounded-md pr-3 text-body font-semibold text-minka-text transition-colors hover:bg-[#ece4d8]"
+      >
+        <CaretLeft size={22} weight="bold" aria-hidden="true" />
+        Inicio
+      </Link>
+
       <div>
         <h1 className="text-display font-semibold text-minka-text">
           Unirme a una junta
@@ -21,7 +31,15 @@ export default async function UnirsePage({
         </p>
       </div>
 
-      <UnirseJunta codigoInicial={codigo} score={USUARIO_ACTUAL.score} />
+      <UnirseJunta codigoInicial={codigo} />
     </div>
+  );
+}
+
+export default function UnirsePage() {
+  return (
+    <Suspense fallback={null}>
+      <Contenido />
+    </Suspense>
   );
 }

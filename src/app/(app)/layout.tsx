@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Logo } from "@/components/minka/logo";
 import { BottomNav } from "@/components/minka/bottom-nav";
-import { USUARIO_ACTUAL } from "@/lib/minka/mock-data";
+import { MenuCuenta } from "@/components/minka/menu-cuenta";
+import { GuardiaSesion } from "@/components/minka/guardia-sesion";
 
 /**
  * Shell de las pantallas con sesión iniciada.
@@ -18,26 +19,13 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           <Link href="/inicio" aria-label="Minka, ir al inicio" className="flex">
             <Logo size={32} />
           </Link>
-
-          <Link
-            href="/historial"
-            className="touch-target flex items-center gap-2 rounded-md pl-2 transition-colors hover:bg-[#ece4d8]"
-          >
-            <span className="hidden text-support font-semibold text-minka-text sm:inline">
-              {USUARIO_ACTUAL.nombre}
-            </span>
-            <span
-              className="grid size-10 place-items-center rounded-full bg-minka-primary text-support font-semibold text-white"
-              aria-hidden="true"
-            >
-              {USUARIO_ACTUAL.iniciales}
-            </span>
-            <span className="sr-only">Ver mi historial y mi cuenta</span>
-          </Link>
+          <MenuCuenta />
         </div>
       </header>
 
-      <main className="minka-container flex-1 py-6">{children}</main>
+      <main className="minka-container flex-1 py-6">
+        <GuardiaSesion>{children}</GuardiaSesion>
+      </main>
 
       <BottomNav />
     </div>

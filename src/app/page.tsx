@@ -15,6 +15,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/minka/logo";
+import { NIVELES } from "@/lib/minka/niveles";
 import { HeroCarousel } from "@/components/landing/hero-carousel";
 import { SiteHeader } from "@/components/landing/site-header";
 
@@ -145,7 +146,10 @@ export default function LandingPage() {
                 const Icono = paso.icono;
                 return (
                   <li key={paso.titulo}>
-                    <Card className="h-full">
+                    {/* Relieve al pasar el cursor: 200ms, elevación sutil y un
+                        desplazamiento de 2px. Suficiente para que la tarjeta se
+                        sienta viva sin volverse una animación llamativa. */}
+                    <Card className="h-full transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevated">
                       <CardContent className="flex h-full flex-col gap-3">
                         <span className="flex size-14 items-center justify-center rounded-lg bg-[#f7e6d5]">
                           <Icono
@@ -187,7 +191,10 @@ export default function LandingPage() {
               {BENEFICIOS.map((b) => {
                 const Icono = b.icono;
                 return (
-                  <Card key={b.titulo}>
+                  <Card
+                    key={b.titulo}
+                    className="transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevated"
+                  >
                     <CardContent className="flex gap-4">
                       <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-[#e9e2d4]">
                         <Icono
@@ -213,8 +220,56 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Planes */}
+        {/* Niveles de confianza */}
         <section className="border-t border-minka-border bg-minka-surface px-4 py-16">
+          <div className="mx-auto w-full max-w-6xl">
+            <h2 className="text-h2 font-semibold text-minka-text">
+              Cumplir te cuesta menos
+            </h2>
+            <p className="mt-3 max-w-2xl text-body text-minka-muted">
+              Cada cuota puntual sube tu nivel. Y mientras más alto tu nivel, menos
+              garantía te piden para cobrar tu turno antes de tiempo.
+            </p>
+
+            <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+              {NIVELES.map((nivel) => (
+                <li key={nivel.id}>
+                  <div
+                    className="flex h-full flex-col rounded-lg border border-minka-border bg-minka-bg p-5 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevated"
+                    style={{ borderTopColor: nivel.color, borderTopWidth: 4 }}
+                  >
+                    <Medal
+                      size={30}
+                      weight="duotone"
+                      color={nivel.color}
+                      aria-hidden="true"
+                    />
+                    <h3
+                      className="mt-3 text-h3 font-semibold"
+                      style={{ color: nivel.color }}
+                    >
+                      {nivel.nombre}
+                    </h3>
+                    <p className="mt-1 text-support font-semibold text-minka-text">
+                      Garantía: {nivel.porcentajeGarantia}%
+                    </p>
+                    <p className="mt-2 text-support text-minka-muted">
+                      {nivel.beneficio}
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            <p className="mt-6 rounded-lg border border-minka-border bg-minka-bg p-4 text-body text-minka-text">
+              Y aparte del nivel: cuando terminas 2 juntas como organizador, puedes
+              abrir juntas públicas, donde entra gente que todavía no conoces.
+            </p>
+          </div>
+        </section>
+
+        {/* Planes */}
+        <section className="border-t border-minka-border bg-minka-bg px-4 py-16">
           <div className="mx-auto w-full max-w-6xl">
             <h2 className="text-h2 font-semibold text-minka-text">Planes</h2>
             <p className="mt-3 max-w-2xl text-body text-minka-muted">

@@ -1,19 +1,25 @@
+"use client";
+
 import { AuthShell } from "@/components/minka/auth-shell";
 import { RecuperarCuenta } from "@/components/recuperar/recuperar-cuenta";
-import { CONTACTOS_RECUPERACION } from "@/lib/minka/mock-data";
-
-export const metadata = { title: "Recuperar mi cuenta — Minka" };
+import { useSesion } from "@/lib/minka/prototipo/sesion";
 
 export default function RecuperarPage() {
-  // TODO: conectar a smart contract — leer los guardianes configurados on-chain
-  // para la recuperación social de esta cuenta.
+  // TODO: conectar a backend — leer los guardianes configurados para la
+  // recuperación social de esta cuenta.
+  const { contactos, agregarContacto, quitarContacto, usuario } = useSesion();
+
   return (
     <AuthShell
       titulo="Tus contactos de confianza"
       descripcion="Así vuelves a entrar si cambias de celular o pierdes el acceso."
-      volverA="/entrar"
+      volverA={usuario ? "/historial" : "/entrar"}
     >
-      <RecuperarCuenta contactos={CONTACTOS_RECUPERACION} />
+      <RecuperarCuenta
+        contactos={contactos}
+        onAgregar={agregarContacto}
+        onQuitar={quitarContacto}
+      />
     </AuthShell>
   );
 }

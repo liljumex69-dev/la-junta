@@ -3,12 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Envelope, GoogleLogo } from "@phosphor-icons/react/ssr";
+import { Envelope } from "@phosphor-icons/react/ssr";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Spinner } from "@/components/minka/spinner";
+import { LogoGoogle } from "@/components/minka/logo-google";
 
 /**
  * Registro.
@@ -20,7 +21,13 @@ import { Spinner } from "@/components/minka/spinner";
  * En ningún momento se menciona "wallet", "cripto", "clave privada" ni "frase semilla":
  * la wallet se crea en segundo plano y el usuario no necesita saber que existe.
  */
-export function RegistroForm({ invitadoPor }: { invitadoPor?: string }) {
+export function RegistroForm({
+  invitadoPor,
+  codigoJunta,
+}: {
+  invitadoPor?: string;
+  codigoJunta?: string;
+}) {
   const router = useRouter();
   const [telefono, setTelefono] = useState("");
   const [enviando, setEnviando] = useState(false);
@@ -47,6 +54,7 @@ export function RegistroForm({ invitadoPor }: { invitadoPor?: string }) {
 
     const params = new URLSearchParams({ tel: digitos });
     if (invitadoPor) params.set("invita", invitadoPor);
+    if (codigoJunta) params.set("junta", codigoJunta);
     router.push(`/registro/codigo?${params.toString()}`);
   }
 
@@ -108,9 +116,14 @@ export function RegistroForm({ invitadoPor }: { invitadoPor?: string }) {
         variant="outline"
         size="lg"
         className="w-full"
-        onClick={() => router.push("/registro/perfil")}
+        onClick={() => {
+          const params = new URLSearchParams();
+          if (invitadoPor) params.set("invita", invitadoPor);
+          if (codigoJunta) params.set("junta", codigoJunta);
+          router.push(`/registro/perfil?${params.toString()}`);
+        }}
       >
-        <GoogleLogo size={22} weight="bold" aria-hidden="true" />
+        <LogoGoogle />
         Continuar con Google
       </Button>
 

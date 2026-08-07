@@ -7,9 +7,10 @@ export default async function RegistroPage({
   searchParams,
 }: PageProps<"/registro">) {
   const params = await searchParams;
-  // Si llega por un link de invitación, se guarda de quién vino: esa relación
-  // alimenta después el historial de "personas distintas" de ambos.
+  // Si llega por un link de invitación, se guarda de quién vino y a qué junta,
+  // para inscribirlo automáticamente al terminar el registro.
   const invita = typeof params.invita === "string" ? params.invita : undefined;
+  const junta = typeof params.junta === "string" ? params.junta : undefined;
 
   return (
     <AuthShell
@@ -19,7 +20,7 @@ export default async function RegistroPage({
       paso={1}
       totalPasos={3}
     >
-      <RegistroForm invitadoPor={invita} />
+      <RegistroForm invitadoPor={invita} codigoJunta={junta} />
     </AuthShell>
   );
 }

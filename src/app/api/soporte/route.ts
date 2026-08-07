@@ -1,6 +1,8 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { NextResponse } from "next/server";
 
+import { responderLocalmente } from "@/lib/minka/respuestas-soporte";
+
 /**
  * Chat del centro de ayuda.
  *
@@ -38,19 +40,6 @@ interface MensajeEntrada {
 export async function POST(request: Request) {
   const apiKey = process.env.ANTHROPIC_API_KEY;
 
-  if (!apiKey) {
-    // El prototipo sigue siendo navegable sin clave: se responde con un aviso claro
-    // en vez de romper la pantalla de ayuda.
-    return NextResponse.json(
-      {
-        respuesta:
-          "El chat de ayuda todavía no está conectado en esta demo. Mientras tanto, revisa las preguntas frecuentes de abajo: ahí está lo que más nos preguntan.",
-        sinClave: true,
-      },
-      { status: 200 }
-    );
-  }
-
   let mensajes: MensajeEntrada[];
   try {
     const cuerpo = await request.json();
@@ -67,6 +56,14 @@ export async function POST(request: Request) {
       { error: "Escribe tu pregunta para poder ayudarte." },
       { status: 400 }
     );
+  }
+
+  const ultima = mensajes[mensajes.length - 1]?.texto ?? "";
+
+  // Sin clave configurada el chat sigue siendo útil: responde con la base local.
+  // El usuario nunca ve un aviso de "no conectado".
+  if (!apiKey) {
+    return NextResponse.json({ respuesta: responderLocalmente(ultima) });
   }
 
   const client = new Anthropic({ apiKey });
@@ -105,22 +102,9 @@ export async function POST(request: Request) {
         "No me quedó clara tu pregunta. ¿Me la puedes decir de otra manera?",
     });
   } catch (error) {
-    if (error instanceof Anthropic.RateLimitError) {
-      return NextResponse.json(
-        { error: "Hay muchas consultas en este momento. Intenta en un minuto." },
-        { status: 429 }
-      );
-    }
-    if (error instanceof Anthropic.AuthenticationError) {
-      return NextResponse.json(
-        { error: "El chat de ayuda no está configurado correctamente." },
-        { status: 500 }
-      );
-    }
+    // Si la API falla por lo que sea, el usuario igual recibe una respuesta útil
+    // en vez de un error. Se registra el fallo para poder diagnosticarlo.
     console.error("Error en el chat de soporte:", error);
-    return NextResponse.json(
-      { error: "No pudimos responderte ahora. Intenta de nuevo." },
-      { status: 500 }
-    );
+    return NextResponse.json({ respuesta: responderLocalmente(ultima) });
   }
 }

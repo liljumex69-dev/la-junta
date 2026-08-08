@@ -1,5 +1,13 @@
+"use client";
+
+import { BellRinging } from "@phosphor-icons/react/ssr";
+import { toast } from "sonner";
+
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { ETIQUETA_ESTADO_CUOTA, formatoPeriodo, soles } from "@/lib/junta/format";
+import { esDirectivo } from "@/lib/junta/rules";
+import { useJunta } from "@/lib/junta/context";
 import type { CuotaComerciante, Usuario } from "@/lib/junta/types";
 
 const VARIANTE_ESTADO: Record<CuotaComerciante["estado"], "success" | "late" | "danger"> = {
@@ -13,6 +21,10 @@ const VARIANTE_ESTADO: Record<CuotaComerciante["estado"], "success" | "late" | "
  * mora. Sin ningún mecanismo de garantía o aval individual — ese concepto no
  * existe en Junta. Es, en cambio, la base declarada para un futuro acceso a
  * microcrédito real.
+ *
+ * Para el directorio, cada fila pendiente o en mora tiene un botón de recordar
+ * la cuota: registra una notificación en la app del comerciante y abre WhatsApp
+ * con el mensaje ya escrito — las dos vías que pidió el equipo, en un solo clic.
  */
 export function TablaCumplimiento({
   cuotas,
@@ -21,6 +33,9 @@ export function TablaCumplimiento({
   cuotas: CuotaComerciante[];
   usuarios: Usuario[];
 }) {
+  const { usuario, enviarRecordatorioCuota } = useJunta();
+  const puedeNotificar = esDirectivo(usuario);
+
   if (cuotas.length === 0) {
     return (
       <p className="rounded-lg border border-marca-borde bg-marca-superficie p-4 text-support text-marca-tenue">
@@ -37,6 +52,12 @@ export function TablaCumplimiento({
     return usuarios.find((u) => u.id === comercianteId)?.numeroPuesto ?? "—";
   }
 
+  function notificar(cuota: CuotaComerciante) {
+    const { enlaceWhatsapp } = enviarRecordatorioCuota(cuota.id);
+    toast.success(`Recordatorio enviado a ${nombreDe(cuota.comercianteId)}`);
+    if (enlaceWhatsapp) window.open(enlaceWhatsapp, "_blank");
+  }
+
   const ordenadas = [...cuotas].sort((a, b) => b.periodo.localeCompare(a.periodo));
 
   return (
@@ -49,6 +70,7 @@ export function TablaCumplimiento({
             <th className="p-3 text-left">Puesto</th>
             <th className="p-3 text-right">Monto</th>
             <th className="p-3 text-right">Estado</th>
+            {puedeNotificar ? <th className="p-3 text-right">Recordar</th> : null}
           </tr>
         </thead>
         <tbody>
@@ -67,6 +89,20 @@ export function TablaCumplimiento({
                   {ETIQUETA_ESTADO_CUOTA[c.estado]}
                 </Badge>
               </td>
+              {puedeNotificar ? (
+                <td className="p-3 text-right">
+                  {c.estado !== "pagado" ? (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      aria-label={`Recordar cuota a ${nombreDe(c.comercianteId)}`}
+                      onClick={() => notificar(c)}
+                    >
+                      <BellRinging size={20} weight="duotone" color="#B8863B" aria-hidden="true" />
+                    </Button>
+                  ) : null}
+                </td>
+              ) : null}
             </tr>
           ))}
         </tbody>

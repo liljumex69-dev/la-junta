@@ -7,8 +7,10 @@ import { CheckCircle, DownloadSimple, Info, Users, Warning } from "@phosphor-ico
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { Aparecer } from "@/components/common/aparecer";
-import { ETIQUETA_CARGO } from "@/lib/junta/format";
+import { CompartirAsociacion } from "@/components/asociacion/compartir-asociacion";
+import { etiquetaCargo } from "@/lib/junta/format";
 import { esDirectivo, formatoUmbral } from "@/lib/junta/rules";
 import { descargarCSV } from "@/lib/junta/csv";
 import { useJunta } from "@/lib/junta/context";
@@ -76,7 +78,7 @@ export default function ConfiguracionPage() {
     descargarCSV(
       `directorio-${asociacion.codigoInvitacion}.csv`,
       ["Nombre", "Cargo", "Firmante"],
-      directivosDelDirectorio.map((d) => [d.nombre, ETIQUETA_CARGO[d.cargo], "Sí"])
+      directivosDelDirectorio.map((d) => [d.nombre, etiquetaCargo(d.cargo), "Sí"])
     );
   };
 
@@ -84,7 +86,7 @@ export default function ConfiguracionPage() {
     <div className="space-y-6">
       <Aparecer>
         <h1 className="text-display font-semibold text-marca-texto">
-          Configuración
+          Configuración de la asociación
         </h1>
         <p className="mt-1 text-body text-marca-tenue">{asociacion.nombreMercado}</p>
       </Aparecer>
@@ -167,7 +169,7 @@ export default function ConfiguracionPage() {
                 <p className="truncate text-body font-semibold text-marca-texto">
                   {d.nombre}
                 </p>
-                <p className="text-support text-marca-tenue">{ETIQUETA_CARGO[d.cargo]}</p>
+                <p className="text-support text-marca-tenue">{etiquetaCargo(d.cargo)}</p>
               </div>
             </li>
           ))}
@@ -199,8 +201,10 @@ export default function ConfiguracionPage() {
         </div>
         {configuracion.mora.activa ? (
           <div>
-            <Label className="text-body font-semibold">Porcentaje de recargo</Label>
-            <div className="mt-2 flex gap-2">
+            <Label htmlFor="mora-porcentaje-config" className="text-body font-semibold">
+              Porcentaje de recargo
+            </Label>
+            <div className="mt-2 flex items-center gap-2">
               {PORCENTAJES_MORA.map((p) => (
                 <button
                   key={p}
@@ -216,9 +220,33 @@ export default function ConfiguracionPage() {
                   {p}%
                 </button>
               ))}
+              <div className="relative w-24 shrink-0">
+                <Input
+                  id="mora-porcentaje-config"
+                  type="number"
+                  inputMode="decimal"
+                  min={0}
+                  max={100}
+                  step="0.5"
+                  className="h-11 pr-7 text-center"
+                  value={configuracion.mora.porcentaje}
+                  onChange={(e) =>
+                    cambiarMoraPorcentaje(Math.min(100, Math.max(0, Number(e.target.value))))
+                  }
+                  aria-label="Porcentaje de recargo específico"
+                />
+                <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-support text-marca-tenue">
+                  %
+                </span>
+              </div>
             </div>
           </div>
         ) : null}
+      </section>
+
+      {/* Compartir / QR */}
+      <section className="rounded-lg border border-marca-borde bg-marca-superficie p-5">
+        <CompartirAsociacion asociacion={asociacion} />
       </section>
 
       {/* Notificaciones */}

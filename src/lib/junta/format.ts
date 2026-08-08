@@ -12,7 +12,14 @@ export const ETIQUETA_CARGO: Record<string, string> = {
   tesorero: "Tesorero",
   secretario: "Secretario",
   vocal: "Vocal",
+  otro: "Otro cargo",
 };
+
+/** Resuelve la etiqueta de un cargo, usando el título propio si es "otro". */
+export function etiquetaCargo(cargo?: string, cargoPersonalizado?: string): string {
+  if (cargo === "otro" && cargoPersonalizado?.trim()) return cargoPersonalizado.trim();
+  return cargo ? (ETIQUETA_CARGO[cargo] ?? cargo) : "Directivo";
+}
 
 export const ETIQUETA_ESTADO_CUOTA: Record<string, string> = {
   pagado: "Al día",

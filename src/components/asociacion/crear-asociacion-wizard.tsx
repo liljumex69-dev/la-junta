@@ -24,7 +24,7 @@ import {
 import { OpcionRadio } from "@/components/common/opcion-radio";
 import { Spinner } from "@/components/common/spinner";
 import { CompartirAsociacion } from "@/components/asociacion/compartir-asociacion";
-import { ETIQUETA_CARGO } from "@/lib/junta/format";
+import { ETIQUETA_CARGO, etiquetaCargo } from "@/lib/junta/format";
 import { useJunta } from "@/lib/junta/context";
 import type { Asociacion, CargoDirectivo, DirectivoInicial } from "@/lib/junta/types";
 
@@ -33,9 +33,14 @@ const CARGOS: { valor: CargoDirectivo; titulo: string; descripcion: string }[] =
   { valor: "tesorero", titulo: "Tesorero", descripcion: "Propone los gastos del fondo con más frecuencia." },
   { valor: "secretario", titulo: "Secretario", descripcion: "Lleva las actas y las comunicaciones del directorio." },
   { valor: "vocal", titulo: "Vocal", descripcion: "Firma las propuestas junto con el resto del directorio." },
+  { valor: "otro", titulo: "Otro cargo", descripcion: "Escribe el título que use tu asociación." },
 ];
 
-const CARGOS_LISTA: CargoDirectivo[] = ["presidente", "tesorero", "secretario", "vocal"];
+const CARGOS_LISTA: CargoDirectivo[] = ["presidente", "tesorero", "secretario", "vocal", "otro"];
+
+/** Presidente y tesorero son un solo puesto — nadie más los puede elegir mientras
+ * ya estén tomados. Secretario, vocal y "otro" sí pueden repetirse. */
+const CARGOS_UNICOS: CargoDirectivo[] = ["presidente", "tesorero"];
 
 /**
  * Crear asociación.
@@ -56,6 +61,7 @@ export function CrearAsociacionWizard() {
   const [nombreMercado, setNombreMercado] = useState("");
   const [numeroPuestos, setNumeroPuestos] = useState(50);
   const [cargo, setCargo] = useState<CargoDirectivo>("presidente");
+  const [cargoPersonalizado, setCargoPersonalizado] = useState("");
   const [directivos, setDirectivos] = useState<DirectivoInicial[]>([
     { nombre: "", cargo: "tesorero" },
     { nombre: "", cargo: "vocal" },
@@ -74,6 +80,16 @@ export function CrearAsociacionWizard() {
     setDirectivos((d) => d.map((x, k) => (k === i ? { ...x, ...cambio } : x)));
   }
 
+  /** Presidente/tesorero ya elegidos por mí o por otro directivo, salvo `excluirSlot`. */
+  function cargosTomados(excluirSlot: "yo" | number): CargoDirectivo[] {
+    const tomados: CargoDirectivo[] = [];
+    if (excluirSlot !== "yo" && CARGOS_UNICOS.includes(cargo)) tomados.push(cargo);
+    directivos.forEach((d, i) => {
+      if (i !== excluirSlot && CARGOS_UNICOS.includes(d.cargo)) tomados.push(d.cargo);
+    });
+    return tomados;
+  }
+
   async function crear() {
     if (creando) return;
     setCreando(true);
@@ -84,6 +100,7 @@ export function CrearAsociacionWizard() {
       numeroPuestos,
       umbralFirmas,
       cargo,
+      cargoPersonalizado: cargo === "otro" ? cargoPersonalizado : undefined,
       directivosIniciales: directivosValidos,
       moraActiva,
       moraPorcentaje,
@@ -128,6 +145,7 @@ export function CrearAsociacionWizard() {
 
   return (
     <div className="space-y-6">
+      <h1 className="sr-only">Fundar mi asociación</h1>
       <div>
         <div className="flex items-center justify-between">
           {paso > 0 ? (
@@ -140,7 +158,13 @@ export function CrearAsociacionWizard() {
               Atrás
             </button>
           ) : (
-            <span />
+            <Link
+              href="/registro/camino"
+              className="touch-target -ml-3 flex items-center gap-1 rounded-md pr-3 text-body font-semibold text-marca-texto transition-colors hover:bg-[#ece5d3]"
+            >
+              <CaretLeft size={22} weight="bold" aria-hidden="true" />
+              Atrás
+            </Link>
           )}
           <span className="text-support font-semibold text-marca-secundario">
             Paso {paso + 1} de {pasos.length}
@@ -216,7 +240,7 @@ export function CrearAsociacionWizard() {
           <div>
             <Label className="text-body font-semibold">Tu cargo</Label>
             <div className="mt-2 space-y-3">
-              {CARGOS.map((c) => (
+              {CARGOS.filter((c) => !cargosTomados("yo").includes(c.valor)).map((c) => (
                 <OpcionRadio
                   key={c.valor}
                   name="mi-cargo"
@@ -227,45 +251,71 @@ export function CrearAsociacionWizard() {
                 />
               ))}
             </div>
+            {cargo === "otro" ? (
+              <Input
+                className="mt-3"
+                placeholder="Ej. Fiscal, Coordinador de seguridad…"
+                value={cargoPersonalizado}
+                onChange={(e) => setCargoPersonalizado(e.target.value)}
+                aria-label="Título de tu cargo"
+              />
+            ) : null}
           </div>
 
           <div>
             <Label className="text-body font-semibold">Los demás directivos</Label>
-            <div className="mt-2 space-y-3">
-              {directivos.map((d, i) => (
-                <div key={i} className="flex gap-2">
-                  <Input
-                    placeholder="Nombre completo"
-                    value={d.nombre}
-                    onChange={(e) => actualizarDirectivo(i, { nombre: e.target.value })}
-                    aria-label={`Nombre del directivo ${i + 1}`}
-                  />
-                  <Select
-                    value={d.cargo}
-                    onValueChange={(v) => actualizarDirectivo(i, { cargo: v as CargoDirectivo })}
-                  >
-                    <SelectTrigger className="h-12 w-40 shrink-0 border-2 border-marca-borde bg-marca-superficie text-body">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {CARGOS_LISTA.map((c) => (
-                        <SelectItem key={c} value={c}>
-                          {ETIQUETA_CARGO[c]}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Quitar este directivo"
-                    onClick={() => setDirectivos((ds) => ds.filter((_, k) => k !== i))}
-                  >
-                    <Trash size={20} weight="duotone" />
-                  </Button>
-                </div>
-              ))}
+            <div className="mt-2 space-y-2">
+              {directivos.map((d, i) => {
+                const tomados = cargosTomados(i);
+                const opciones = CARGOS_LISTA.filter((c) => !tomados.includes(c));
+                return (
+                  <div key={i} className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        placeholder="Nombre completo"
+                        value={d.nombre}
+                        onChange={(e) => actualizarDirectivo(i, { nombre: e.target.value })}
+                        aria-label={`Nombre del directivo ${i + 1}`}
+                      />
+                      <Select
+                        value={d.cargo}
+                        onValueChange={(v) => actualizarDirectivo(i, { cargo: v as CargoDirectivo })}
+                      >
+                        <SelectTrigger className="h-12 w-40 shrink-0 border-2 border-marca-borde bg-marca-superficie text-body">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {opciones.map((c) => (
+                            <SelectItem key={c} value={c}>
+                              {ETIQUETA_CARGO[c]}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        aria-label="Quitar este directivo"
+                        className="shrink-0 text-marca-peligro hover:bg-[#f3e0de] hover:text-marca-peligro"
+                        onClick={() => setDirectivos((ds) => ds.filter((_, k) => k !== i))}
+                      >
+                        <Trash size={20} weight="duotone" />
+                      </Button>
+                    </div>
+                    {d.cargo === "otro" ? (
+                      <Input
+                        placeholder="Título de su cargo"
+                        value={d.cargoPersonalizado ?? ""}
+                        onChange={(e) =>
+                          actualizarDirectivo(i, { cargoPersonalizado: e.target.value })
+                        }
+                        aria-label={`Título del cargo del directivo ${i + 1}`}
+                      />
+                    ) : null}
+                  </div>
+                );
+              })}
             </div>
             <Button
               type="button"
@@ -369,8 +419,10 @@ export function CrearAsociacionWizard() {
 
           {moraActiva ? (
             <div>
-              <Label className="text-body font-semibold">Porcentaje de recargo</Label>
-              <div className="mt-2 flex gap-2">
+              <Label htmlFor="mora-porcentaje" className="text-body font-semibold">
+                Porcentaje de recargo
+              </Label>
+              <div className="mt-2 flex items-center gap-2">
                 {[3, 5, 10].map((p) => (
                   <button
                     key={p}
@@ -386,7 +438,29 @@ export function CrearAsociacionWizard() {
                     {p}%
                   </button>
                 ))}
+                <div className="relative w-24 shrink-0">
+                  <Input
+                    id="mora-porcentaje"
+                    type="number"
+                    inputMode="decimal"
+                    min={0}
+                    max={100}
+                    step="0.5"
+                    className="h-11 pr-7 text-center"
+                    value={moraPorcentaje}
+                    onChange={(e) =>
+                      setMoraPorcentaje(Math.min(100, Math.max(0, Number(e.target.value))))
+                    }
+                    aria-label="Porcentaje de recargo específico"
+                  />
+                  <span className="pointer-events-none absolute top-1/2 right-3 -translate-y-1/2 text-support text-marca-tenue">
+                    %
+                  </span>
+                </div>
               </div>
+              <p className="mt-2 text-support text-marca-tenue">
+                Usa los botones para un valor rápido, o escribe el porcentaje exacto.
+              </p>
             </div>
           ) : null}
         </div>
@@ -403,7 +477,7 @@ export function CrearAsociacionWizard() {
             {[
               ["Mercado", nombreMercado || "Sin nombre"],
               ["Puestos", String(numeroPuestos)],
-              ["Tu cargo", ETIQUETA_CARGO[cargo]],
+              ["Tu cargo", etiquetaCargo(cargo, cargoPersonalizado)],
               ["Directorio", `${totalFirmantes} firmantes en total`],
               ["Umbral de firmas", `${umbralFirmas} de ${totalFirmantes}`],
               ["Mora", moraActiva ? `${moraPorcentaje}% de recargo` : "Desactivada"],
@@ -445,8 +519,20 @@ export function CrearAsociacionWizard() {
         <Button
           size="lg"
           className="w-full"
-          onClick={() => setPaso((p) => p + 1)}
-          disabled={paso === 0 && nombreMercado.trim().length < 3}
+          onClick={() => {
+            // Al salir del paso del directorio, el umbral no puede pedir más
+            // firmas de las que realmente existen — si el directorio se achicó
+            // (se borró un directivo, o nunca se le puso nombre), se ajusta acá,
+            // no en el paso siguiente donde se vería como "3 de 1".
+            if (paso === 1) {
+              setUmbralFirmas((n) => Math.min(n, totalFirmantes));
+            }
+            setPaso((p) => p + 1);
+          }}
+          disabled={
+            (paso === 0 && nombreMercado.trim().length < 3) ||
+            (paso === 1 && cargo === "otro" && cargoPersonalizado.trim().length < 2)
+          }
         >
           Continuar
         </Button>

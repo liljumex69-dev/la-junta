@@ -4,12 +4,10 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   ChartBar,
-  ChatCircleDots,
   Gear,
   House,
   Megaphone,
   PiggyBank,
-  Vault,
 } from "@phosphor-icons/react/ssr";
 
 import {
@@ -25,6 +23,8 @@ import {
 } from "@/components/ui/sidebar";
 import { Logo } from "@/components/common/logo";
 import { MenuCuenta } from "@/components/common/menu-cuenta";
+import { SwitcherAsociacion } from "@/components/common/switcher-asociacion";
+import { DialogAyuda } from "@/components/soporte/dialog-ayuda";
 import { esDirectivo } from "@/lib/junta/rules";
 import { useJunta } from "@/lib/junta/context";
 
@@ -40,10 +40,13 @@ import { useJunta } from "@/lib/junta/context";
  * Responsive por construcción (patrón sidebar de shadcn/ui): fijo a la
  * izquierda en escritorio, y un panel deslizable (Sheet) activado por el
  * botón de menú en móvil — nunca los dos al mismo tiempo.
+ *
+ * "Inicio" y "El fondo" se unificaron en una sola pantalla (antes repetían
+ * saldo, propuestas y botones) — por eso `/fondo/...` también cuenta como
+ * activo para "Inicio", en vez de tener una segunda entrada casi idéntica.
  */
 const DESTINOS = [
-  { href: "/inicio", label: "Inicio", icono: House },
-  { href: "/fondo", label: "El fondo", icono: Vault },
+  { href: "/inicio", label: "Inicio", icono: House, tambienActivoEn: ["/fondo"] },
   { href: "/ahorro", label: "Mi ahorro personal", icono: PiggyBank },
   { href: "/cumplimiento", label: "Historial de cumplimiento", icono: ChartBar },
   { href: "/anuncios", label: "Tablón de anuncios", icono: Megaphone },
@@ -72,6 +75,11 @@ export function AppSidebar() {
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
+          {tieneAsociacion ? (
+            <SidebarMenuItem>
+              <SwitcherAsociacion />
+            </SidebarMenuItem>
+          ) : null}
         </SidebarMenu>
       </SidebarHeader>
 
@@ -82,7 +90,11 @@ export function AppSidebar() {
               <SidebarMenu>
                 {DESTINOS.map((d) => {
                   const Icono = d.icono;
-                  const activo = pathname === d.href || pathname.startsWith(`${d.href}/`);
+                  const prefijosExtra = "tambienActivoEn" in d ? d.tambienActivoEn : [];
+                  const activo =
+                    pathname === d.href ||
+                    pathname.startsWith(`${d.href}/`) ||
+                    prefijosExtra.some((p) => pathname === p || pathname.startsWith(`${p}/`));
                   return (
                     <SidebarMenuItem key={d.href}>
                       <SidebarMenuButton asChild isActive={activo} tooltip={d.label} size="lg">
@@ -112,7 +124,9 @@ export function AppSidebar() {
                           weight={pathname.startsWith("/configuracion") ? "fill" : "duotone"}
                           aria-hidden="true"
                         />
-                        <span>Configuración</span>
+                        {/* No es "configuración" a secas — eso vive en el perfil del
+                            usuario (menú de cuenta). Esto es lo que gobierna el fondo. */}
+                        <span>Ajustes de la asociación</span>
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -127,24 +141,9 @@ export function AppSidebar() {
         <SidebarGroup className="mt-auto">
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton
-                asChild
-                isActive={pathname.startsWith("/soporte")}
-                tooltip="Centro de ayuda"
-                size="lg"
-              >
-                <Link
-                  href="/soporte"
-                  aria-current={pathname.startsWith("/soporte") ? "page" : undefined}
-                >
-                  <ChatCircleDots
-                    size={22}
-                    weight={pathname.startsWith("/soporte") ? "fill" : "duotone"}
-                    aria-hidden="true"
-                  />
-                  <span>Ayuda</span>
-                </Link>
-              </SidebarMenuButton>
+              {/* Modal, no navegación: abrir ayuda no debe hacer desaparecer el
+                  resto de la pantalla — cerrarla te deja donde estabas. */}
+              <DialogAyuda />
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarGroup>

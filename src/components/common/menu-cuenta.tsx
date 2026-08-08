@@ -6,9 +6,20 @@ import {
   ArrowsClockwise,
   CaretUpDown,
   SignOut,
+  User,
   UserSwitch,
 } from "@phosphor-icons/react/ssr";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -18,6 +29,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { SidebarMenuButton } from "@/components/ui/sidebar";
+import { DialogPerfil } from "@/components/common/dialog-perfil";
 import { useJunta } from "@/lib/junta/context";
 import { ETIQUETA_CARGO } from "@/lib/junta/format";
 
@@ -39,12 +51,16 @@ export function MenuCuenta() {
   // transición de ruta, dejando el menú montado con pointer-events activos.
   // Cerrarlo nosotros mismos, antes de navegar, evita ese estado a medias.
   const [abierto, setAbierto] = useState(false);
+  const [perfilAbierto, setPerfilAbierto] = useState(false);
+  const [confirmarReinicio, setConfirmarReinicio] = useState(false);
+  const [confirmarSalida, setConfirmarSalida] = useState(false);
 
   if (!usuario) return null;
 
   const esDirectivo = usuario.rol === "directivo";
 
   return (
+    <>
     <DropdownMenu open={abierto} onOpenChange={setAbierto}>
       <DropdownMenuTrigger asChild>
         <SidebarMenuButton
@@ -52,7 +68,8 @@ export function MenuCuenta() {
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <span
-            className="grid size-8 shrink-0 place-items-center rounded-full bg-marca-primario text-support font-semibold text-white"
+            className="grid size-8 shrink-0 place-items-center rounded-full text-support font-semibold text-white"
+            style={{ backgroundColor: usuario.colorAvatar ?? "#1F5C3D" }}
             aria-hidden="true"
           >
             {usuario.iniciales}
@@ -85,6 +102,17 @@ export function MenuCuenta() {
           </span>
         </DropdownMenuLabel>
 
+        <DropdownMenuItem
+          onSelect={() => {
+            setAbierto(false);
+            setPerfilAbierto(true);
+          }}
+          className="min-h-[44px] text-body"
+        >
+          <User size={22} weight="duotone" aria-hidden="true" />
+          Mi perfil
+        </DropdownMenuItem>
+
         {/* Solo para la demo: permite recorrer el producto con otros perfiles. */}
         <DropdownMenuSeparator className="bg-marca-borde" />
         <DropdownMenuLabel className="px-3 py-1 text-micro font-semibold tracking-wide text-marca-tenue uppercase">
@@ -110,7 +138,7 @@ export function MenuCuenta() {
         <DropdownMenuItem
           onSelect={() => {
             setAbierto(false);
-            window.location.reload();
+            setConfirmarReinicio(true);
           }}
           className="min-h-[44px] text-body"
         >
@@ -122,8 +150,7 @@ export function MenuCuenta() {
         <DropdownMenuItem
           onSelect={() => {
             setAbierto(false);
-            cerrarSesion();
-            router.push("/");
+            setConfirmarSalida(true);
           }}
           className="min-h-[44px] text-body text-marca-peligro"
         >
@@ -132,5 +159,48 @@ export function MenuCuenta() {
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
+    <DialogPerfil open={perfilAbierto} onOpenChange={setPerfilAbierto} />
+
+    <AlertDialog open={confirmarReinicio} onOpenChange={setConfirmarReinicio}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Reiniciar la demo?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Todo el estado de prueba vuelve a su punto de partida — cuotas,
+            propuestas, ahorro y anuncios que hayas agregado se pierden.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction variant="destructive" onClick={() => window.location.reload()}>
+            Reiniciar
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+
+    <AlertDialog open={confirmarSalida} onOpenChange={setConfirmarSalida}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>¿Cerrar sesión?</AlertDialogTitle>
+          <AlertDialogDescription>
+            Vuelves a la pantalla de entrada. Nada de tu asociación se pierde
+            — vuelves a verlo todo la próxima vez que entres.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogAction
+            onClick={() => {
+              cerrarSesion();
+              router.push("/");
+            }}
+          >
+            Cerrar sesión
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+    </>
   );
 }

@@ -159,8 +159,9 @@ export function UnirseAsociacion({
   }
 
   /* ---------------- Paso 2: confirmar puesto ---------------- */
-  const yaPerteneceAqui = usuario?.asociacionId === asociacion.id;
-  const perteneceAOtra = !!usuario?.asociacionId && !yaPerteneceAqui;
+  // Ya no bloquea unirse a una segunda asociación: un mismo comerciante puede
+  // tener un puesto en más de un mercado, cada uno con su propio fondo.
+  const yaPerteneceAqui = !!usuario?.asociacionesIds.includes(asociacion.id);
 
   return (
     <div className="space-y-6">
@@ -196,11 +197,6 @@ export function UnirseAsociacion({
             <Link href="/fondo">Ver el fondo</Link>
           </Button>
         </div>
-      ) : perteneceAOtra ? (
-        <p className="rounded-lg border border-marca-secundario bg-[#f5e9d3] p-4 text-body text-marca-texto">
-          Tu cuenta ya pertenece a otra asociación. En este prototipo cada cuenta
-          pertenece a un solo mercado a la vez.
-        </p>
       ) : (
         <>
           <div className="rounded-lg border border-marca-borde bg-marca-superficie p-4">

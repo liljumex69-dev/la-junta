@@ -3,6 +3,7 @@ import Link from "next/link";
 import { AppSidebar } from "@/components/common/app-sidebar";
 import { Logo } from "@/components/common/logo";
 import { GuardiaSesion } from "@/components/common/guardia-sesion";
+import { NotificacionesCampana } from "@/components/common/notificaciones-campana";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 /**
@@ -23,6 +24,9 @@ export default function AppLayout({ children }: LayoutProps<"/">) {
           <Link href="/inicio" aria-label="Junta, ir al inicio" className="flex md:hidden">
             <Logo size={28} />
           </Link>
+          <div className="ml-auto flex items-center">
+            <NotificacionesCampana />
+          </div>
         </header>
 
         <main className="contenedor-app flex-1 py-6">

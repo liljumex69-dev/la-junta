@@ -19,7 +19,8 @@ export type CargoDirectivo =
   | "presidente"
   | "tesorero"
   | "secretario"
-  | "vocal";
+  | "vocal"
+  | "otro";
 
 export interface Usuario {
   id: string;
@@ -27,11 +28,25 @@ export interface Usuario {
   dni: string;
   telefono: string;
   iniciales: string;
+  /** Simulado: en el prototipo es un color de fondo para el avatar, no un archivo real. */
+  colorAvatar?: string;
   rol: Rol;
   /** Solo si `rol === "directivo"`. */
   cargo?: CargoDirectivo;
-  /** Id de la asociación a la que pertenece. `null` si aún no se unió a ninguna. */
+  /** Solo si `cargo === "otro"` — el título que escribió la asociación. */
+  cargoPersonalizado?: string;
+  /** Id de la asociación activa — la que se ve en inicio, el fondo, etc. `null` si
+   * todavía no se unió a ninguna. */
   asociacionId: string | null;
+  /**
+   * Todas las asociaciones a las que pertenece, incluida la activa. Permite que un
+   * mismo directivo funde o se una a más de una asociación y cambie entre ellas.
+   *
+   * Simplificación deliberada del prototipo: rol, cargo y número de puesto son del
+   * usuario, no de cada membresía — cambiar de asociación activa no los recalcula
+   * por asociación. En producción cada membresía tendría su propio rol.
+   */
+  asociacionesIds: string[];
   /** Número de puesto en el mercado, para comerciantes. */
   numeroPuesto?: string;
 }
@@ -63,6 +78,8 @@ export interface ConfiguracionAsociacion {
 export interface DirectivoInicial {
   nombre: string;
   cargo: CargoDirectivo;
+  /** Solo si `cargo === "otro"`. */
+  cargoPersonalizado?: string;
 }
 
 export interface Asociacion {
@@ -157,4 +174,23 @@ export interface ContactoConfianza {
   id: string;
   nombre: string;
   iniciales: string;
+}
+
+export type TipoNotificacion =
+  | "recordatorio_cuota"
+  | "propuesta_pendiente"
+  | "propuesta_ejecutada"
+  | "anuncio";
+
+export interface Notificacion {
+  id: string;
+  /** Destinatario. */
+  usuarioId: string;
+  tipo: TipoNotificacion;
+  titulo: string;
+  mensaje: string;
+  fecha: string;
+  leida: boolean;
+  /** Ruta a la que lleva al tocarla, si aplica. */
+  enlace?: string;
 }

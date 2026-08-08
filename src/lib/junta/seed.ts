@@ -4,6 +4,7 @@ import type {
   CuotaComerciante,
   MovimientoAhorro,
   MovimientoFondo,
+  Notificacion,
   PropuestaGasto,
   Usuario,
 } from "./types";
@@ -59,8 +60,10 @@ export const USUARIO_COMERCIANTE: Usuario = {
   dni: "45678912",
   telefono: "987 111 222",
   iniciales: "EV",
+  colorAvatar: "#1F5C3D",
   rol: "comerciante",
   asociacionId: "a-ves",
+  asociacionesIds: ["a-ves"],
   numeroPuesto: "A-14",
 };
 
@@ -70,9 +73,11 @@ export const USUARIO_DIRECTIVO: Usuario = {
   dni: "41234567",
   telefono: "998 333 444",
   iniciales: "MH",
+  colorAvatar: "#B8863B",
   rol: "directivo",
   cargo: "tesorero",
   asociacionId: "a-ves",
+  asociacionesIds: ["a-ves"],
 };
 
 export const USUARIOS_SEED: Usuario[] = [USUARIO_COMERCIANTE, USUARIO_DIRECTIVO];
@@ -330,6 +335,29 @@ export const AHORRO_SEED: MovimientoAhorro[] = [
     categoria: "Familia",
     fecha: "2026-07-01",
     descripcion: "Para útiles escolares",
+  },
+];
+
+export const NOTIFICACIONES_SEED: Notificacion[] = [
+  {
+    id: "n-1",
+    usuarioId: "u-elena",
+    tipo: "recordatorio_cuota",
+    titulo: "Tu cuota de mayo sigue pendiente",
+    mensaje: "El directorio te recuerda pagar tu cuota de mayo para mantenerte al día.",
+    fecha: "2026-08-06",
+    leida: false,
+    enlace: "/fondo/pagar",
+  },
+  {
+    id: "n-2",
+    usuarioId: "u-marco",
+    tipo: "propuesta_pendiente",
+    titulo: "Falta una firma para el techo del pabellón C",
+    mensaje: "Ya firmaste. Todavía falta 1 firma más de otro directivo para ejecutar el gasto.",
+    fecha: "2026-08-05",
+    leida: false,
+    enlace: "/fondo",
   },
 ];
 

@@ -16,9 +16,11 @@ import {
   CUOTAS_SEED,
   DIRECTIVOS_DEMO,
   MOVIMIENTOS_FONDO_SEED,
+  NOTIFICACIONES_SEED,
   PROPUESTAS_SEED,
   USUARIOS_SEED,
 } from "./seed";
+import { formatoPeriodo } from "./format";
 import type {
   Anuncio,
   Asociacion,
@@ -29,6 +31,7 @@ import type {
   DirectivoInicial,
   MovimientoAhorro,
   MovimientoFondo,
+  Notificacion,
   PropuestaGasto,
   Usuario,
 } from "./types";
@@ -60,6 +63,7 @@ interface EstadoJunta {
   ahorro: MovimientoAhorro[];
   anuncios: Anuncio[];
   contactos: Record<string, ContactoConfianza[]>;
+  notificaciones: Notificacion[];
 }
 
 function estadoInicial(): EstadoJunta {
@@ -73,8 +77,13 @@ function estadoInicial(): EstadoJunta {
     ahorro: [...AHORRO_SEED],
     anuncios: [...ANUNCIOS_SEED],
     contactos: {},
+    notificaciones: [...NOTIFICACIONES_SEED],
   };
 }
+
+/** Colores de avatar disponibles para elegir en "Mi perfil" — todos ya
+ * probados en el resto de la interfaz (primario, secundario, éxito, mora). */
+export const COLORES_AVATAR = ["#1F5C3D", "#B8863B", "#4C8C5C", "#7c8a80"];
 
 function iniciales(nombre: string): string {
   const partes = nombre.trim().split(/\s+/).filter(Boolean);
@@ -104,6 +113,9 @@ interface ContextoJunta {
   usuario: Usuario | null;
   usuarios: Usuario[];
   asociacion: Asociacion | null;
+  /** Todas las asociaciones a las que pertenece el usuario, en el mismo orden que
+   * `usuario.asociacionesIds`. La activa es `asociacion`. */
+  misAsociaciones: Asociacion[];
   directivosDelDirectorio: typeof DIRECTIVOS_DEMO;
   cuotas: CuotaComerciante[];
   movimientosFondo: MovimientoFondo[];
@@ -111,23 +123,28 @@ interface ContextoJunta {
   ahorro: MovimientoAhorro[];
   anuncios: Anuncio[];
   contactos: ContactoConfianza[];
+  notificaciones: Notificacion[];
+  notificacionesNoLeidas: number;
 
   registrar: (datos: { nombre: string; dni: string; telefono: string }) => Usuario;
   iniciarSesion: (usuarioId: string) => void;
   iniciarSesionPorTelefono: (telefono: string) => Usuario | null;
   cerrarSesion: () => void;
+  actualizarPerfil: (datos: { nombre?: string; colorAvatar?: string }) => void;
 
   crearAsociacion: (datos: {
     nombreMercado: string;
     numeroPuestos: number;
     umbralFirmas: number;
     cargo: CargoDirectivo;
+    cargoPersonalizado?: string;
     directivosIniciales: DirectivoInicial[];
     moraActiva: boolean;
     moraPorcentaje: number;
   }) => Asociacion;
   buscarAsociacionPorCodigo: (codigo: string) => Asociacion | undefined;
   unirseAsociacion: (asociacionId: string, numeroPuesto: string) => void;
+  cambiarAsociacionActiva: (asociacionId: string) => void;
 
   pagarCuota: (cuotaId: string) => void;
   proponerGasto: (datos: { monto: number; motivo: string; categoria: string }) => PropuestaGasto;
@@ -149,6 +166,12 @@ interface ContextoJunta {
 
   agregarContacto: (nombre: string) => void;
   quitarContacto: (id: string) => void;
+
+  marcarNotificacionLeida: (id: string) => void;
+  marcarTodasLasNotificacionesLeidas: () => void;
+  /** Devuelve el enlace de WhatsApp ya armado; el llamador decide cuándo abrirlo
+   * (evita abrir pestañas desde dentro del Context). */
+  enviarRecordatorioCuota: (cuotaId: string) => { enlaceWhatsapp: string | null };
 }
 
 const Contexto = createContext<ContextoJunta | null>(null);
@@ -187,11 +210,22 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
     [estado, usuario]
   );
 
+  const misAsociaciones = useMemo(
+    () =>
+      usuario
+        ? usuario.asociacionesIds
+            .map((id) => estado.asociaciones.find((a) => a.id === id))
+            .filter((a): a is Asociacion => !!a)
+        : [],
+    [estado, usuario]
+  );
+
   const valor: ContextoJunta = {
     listo: true,
     usuario,
     usuarios: estado.usuarios,
     asociacion,
+    misAsociaciones,
     directivosDelDirectorio: DIRECTIVOS_DEMO,
     cuotas: asociacion
       ? estado.cuotas.filter((c) => c.asociacionId === asociacion.id)
@@ -217,6 +251,14 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
           .sort((a, b) => b.fecha.localeCompare(a.fecha))
       : [],
     contactos: usuario ? (estado.contactos[usuario.id] ?? []) : [],
+    notificaciones: usuario
+      ? estado.notificaciones
+          .filter((n) => n.usuarioId === usuario.id)
+          .sort((a, b) => b.fecha.localeCompare(a.fecha))
+      : [],
+    notificacionesNoLeidas: usuario
+      ? estado.notificaciones.filter((n) => n.usuarioId === usuario.id && !n.leida).length
+      : 0,
 
     registrar: (datos) => {
       const limpio = datos.telefono.replace(/\D/g, "");
@@ -236,6 +278,8 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
         nombre: datos.nombre.trim(),
         dni: datos.dni.trim(),
         telefono: datos.telefono,
+        colorAvatar: COLORES_AVATAR[estadoRef.current.usuarios.length % COLORES_AVATAR.length],
+        asociacionesIds: [],
         iniciales: iniciales(datos.nombre),
         rol: "comerciante",
         asociacionId: null,
@@ -266,6 +310,23 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
 
     cerrarSesion: () => aplicar((p) => ({ ...p, sesionUsuarioId: null })),
 
+    actualizarPerfil: (datos) => {
+      const yo = usuarioActual()!;
+      aplicar((p) => ({
+        ...p,
+        usuarios: p.usuarios.map((u) =>
+          u.id === yo.id
+            ? {
+                ...u,
+                nombre: datos.nombre?.trim() || u.nombre,
+                iniciales: datos.nombre?.trim() ? iniciales(datos.nombre) : u.iniciales,
+                colorAvatar: datos.colorAvatar ?? u.colorAvatar,
+              }
+            : u
+        ),
+      }));
+    },
+
     crearAsociacion: (datos) => {
       const yo = usuarioActual()!;
       // El fundador es un firmante más, sin poder especial sobre los demás — el
@@ -292,12 +353,23 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
       };
       // TODO: conectar a Safe/smart contract — desplegar un Safe multifirma en
       // Arbitrum con el umbral indicado y registrar al fundador como primer firmante.
+      // Fundar una nueva asociación la vuelve la activa, pero no reemplaza las
+      // demás a las que ya pertenece — solo cambia cuál se está viendo.
       aplicar((p) => ({
         ...p,
         asociaciones: [nueva, ...p.asociaciones],
         usuarios: p.usuarios.map((u) =>
           u.id === yo.id
-            ? { ...u, asociacionId: nueva.id, rol: "directivo" as const, cargo: datos.cargo }
+            ? {
+                ...u,
+                asociacionId: nueva.id,
+                asociacionesIds: u.asociacionesIds.includes(nueva.id)
+                  ? u.asociacionesIds
+                  : [...u.asociacionesIds, nueva.id],
+                rol: "directivo" as const,
+                cargo: datos.cargo,
+                cargoPersonalizado: datos.cargoPersonalizado,
+              }
             : u
         ),
       }));
@@ -317,8 +389,27 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
         ...p,
         usuarios: p.usuarios.map((u) =>
           u.id === yo.id
-            ? { ...u, asociacionId, numeroPuesto, rol: "comerciante" as const }
+            ? {
+                ...u,
+                asociacionId,
+                asociacionesIds: u.asociacionesIds.includes(asociacionId)
+                  ? u.asociacionesIds
+                  : [...u.asociacionesIds, asociacionId],
+                numeroPuesto,
+                rol: "comerciante" as const,
+              }
             : u
+        ),
+      }));
+    },
+
+    cambiarAsociacionActiva: (asociacionId) => {
+      const yo = usuarioActual()!;
+      if (!yo.asociacionesIds.includes(asociacionId)) return;
+      aplicar((p) => ({
+        ...p,
+        usuarios: p.usuarios.map((u) =>
+          u.id === yo.id ? { ...u, asociacionId } : u
         ),
       }));
     },
@@ -497,6 +588,57 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
           [yo.id]: (p.contactos[yo.id] ?? []).filter((c) => c.id !== id),
         },
       }));
+    },
+
+    marcarNotificacionLeida: (id) => {
+      aplicar((p) => ({
+        ...p,
+        notificaciones: p.notificaciones.map((n) =>
+          n.id === id ? { ...n, leida: true } : n
+        ),
+      }));
+    },
+
+    marcarTodasLasNotificacionesLeidas: () => {
+      const yo = usuarioActual();
+      if (!yo) return;
+      aplicar((p) => ({
+        ...p,
+        notificaciones: p.notificaciones.map((n) =>
+          n.usuarioId === yo.id ? { ...n, leida: true } : n
+        ),
+      }));
+    },
+
+    enviarRecordatorioCuota: (cuotaId) => {
+      const yo = usuarioActual()!;
+      const cuota = estadoRef.current.cuotas.find((c) => c.id === cuotaId);
+      if (!cuota) return { enlaceWhatsapp: null };
+      const comerciante = estadoRef.current.usuarios.find(
+        (u) => u.id === cuota.comercianteId
+      );
+      if (!comerciante) return { enlaceWhatsapp: null };
+
+      // TODO: conectar a Safe/smart contract — no aplica: el recordatorio es
+      // comunicación, no un movimiento del fondo. Sí debería registrarse quién y
+      // cuándo lo mandó, para no spamear al mismo comerciante varias veces al día.
+      const notificacion: Notificacion = {
+        id: nuevoId("n"),
+        usuarioId: comerciante.id,
+        tipo: "recordatorio_cuota",
+        titulo: `Tu cuota de ${formatoPeriodo(cuota.periodo)} sigue pendiente`,
+        mensaje: `${yo.nombre} te recuerda pagar tu cuota para mantenerte al día.`,
+        fecha: new Date().toISOString().slice(0, 10),
+        leida: false,
+        enlace: "/fondo/pagar",
+      };
+      aplicar((p) => ({ ...p, notificaciones: [notificacion, ...p.notificaciones] }));
+
+      const telefonoLimpio = comerciante.telefono.replace(/\D/g, "");
+      const mensaje = encodeURIComponent(
+        `Hola ${comerciante.nombre.split(" ")[0]}, te recordamos pagar tu cuota de Junta. Puedes hacerlo escaneando el QR desde la app.`
+      );
+      return { enlaceWhatsapp: `https://wa.me/51${telefonoLimpio}?text=${mensaje}` };
     },
   };
 

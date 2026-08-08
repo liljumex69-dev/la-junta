@@ -15,10 +15,21 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Aparecer } from "@/components/common/aparecer";
 import { TarjetaSaldoFondo } from "@/components/asociacion/tarjeta-saldo-fondo";
 import { TarjetaPropuesta } from "@/components/asociacion/tarjeta-propuesta";
-import { soles } from "@/lib/junta/format";
+import { ListaMovimientos } from "@/components/asociacion/lista-movimientos";
+import { DashboardDirectivo } from "@/components/asociacion/dashboard-directivo";
 import { calcularSaldoFondo, esDirectivo } from "@/lib/junta/rules";
 import { useJunta } from "@/lib/junta/context";
 
+/**
+ * Inicio — el panel del fondo, todo en un solo lugar.
+ *
+ * Antes existían dos pantallas casi idénticas ("Inicio" y "El fondo"): mismo
+ * saldo, mismas propuestas activas, mismos botones de acción, repetidos.
+ * Ahora es una sola, con dos columnas en pantallas anchas — el fondo y sus
+ * propuestas a la izquierda, el tablón de anuncios como contenido secundario
+ * a la derecha — para aprovechar el espacio en vez de dejarlo vacío a los
+ * costados de una sola columna angosta.
+ */
 export default function InicioPage() {
   const { usuario, asociacion, movimientosFondo, propuestas, cuotas, anuncios } =
     useJunta();
@@ -40,140 +51,145 @@ export default function InicioPage() {
     : [];
 
   return (
-    <div className="space-y-6">
-      <Aparecer>
-        <h1 className="text-display font-semibold text-marca-texto">
-          Hola, {usuario.nombre.split(" ")[0]}
-        </h1>
-        <p className="mt-1 text-body text-marca-tenue">{asociacion.nombreMercado}</p>
-      </Aparecer>
+    <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
+      {/* Columna principal: el fondo, tu estado, propuestas, historial */}
+      <div className="space-y-6 lg:col-span-2">
+        <Aparecer>
+          <h1 className="text-display font-semibold text-marca-texto">
+            Hola, {usuario.nombre.split(" ")[0]}
+          </h1>
+          <p className="mt-1 text-body text-marca-tenue">{asociacion.nombreMercado}</p>
+        </Aparecer>
 
-      <Aparecer retraso={0.05}>
-        <Link href="/fondo" className="block">
+        <Aparecer retraso={0.05}>
           <TarjetaSaldoFondo saldo={saldo} />
-        </Link>
-      </Aparecer>
-
-      {/* Lo que le toca a esta persona ahora — comerciante: su cuota; directivo:
-          las firmas que le esperan. */}
-      {!directivo && miCuotaPendiente ? (
-        <Aparecer retraso={0.1}>
-          <Card className="border-2 border-marca-secundario">
-            <CardContent>
-              <p className="flex items-center gap-2 text-h3 font-semibold text-marca-texto">
-                <Warning size={24} weight="fill" color="#B8863B" aria-hidden="true" />
-                Tu cuota está {miCuotaPendiente.estado === "mora" ? "en mora" : "pendiente"}
-              </p>
-              <p className="mt-2 text-body text-marca-tenue">
-                Vence el {miCuotaPendiente.fechaVencimiento}
-              </p>
-              <Button asChild size="lg" className="mt-4 w-full">
-                <Link href="/fondo/pagar">
-                  <HandCoins size={22} weight="fill" aria-hidden="true" />
-                  Pagar mi cuota
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
         </Aparecer>
-      ) : !directivo ? (
-        <Aparecer retraso={0.1}>
-          <Card className="border-2 border-marca-primario">
-            <CardContent className="flex items-center gap-3">
-              <CheckCircle size={28} weight="fill" color="#4C8C5C" aria-hidden="true" />
-              <p className="text-body font-semibold text-marca-texto">
-                Tu cuota de este mes ya está al día.
-              </p>
-            </CardContent>
-          </Card>
-        </Aparecer>
-      ) : esperandoMiFirma.length > 0 ? (
-        <Aparecer retraso={0.1}>
-          <Card className="border-2 border-marca-secundario">
-            <CardContent>
-              <p className="flex items-center gap-2 text-h3 font-semibold text-marca-texto">
-                <Signature size={24} weight="fill" color="#B8863B" aria-hidden="true" />
-                {esperandoMiFirma.length}{" "}
-                {esperandoMiFirma.length === 1
-                  ? "propuesta espera tu firma"
-                  : "propuestas esperan tu firma"}
-              </p>
-              <p className="mt-2 text-body text-marca-tenue">
-                Ningún gasto se ejecuta sin el acuerdo de varios directivos.
-              </p>
-              <Button asChild size="lg" className="mt-4 w-full">
-                <Link href={`/fondo/propuesta/${esperandoMiFirma[0].id}`}>
-                  Revisar la primera
-                  <ArrowRight size={20} weight="bold" />
-                </Link>
-              </Button>
-            </CardContent>
-          </Card>
-        </Aparecer>
-      ) : null}
 
-      {/* Propuestas activas */}
-      {propuestasPendientes.length > 0 ? (
-        <section>
-          <div className="flex items-baseline justify-between gap-3">
-            <h2 className="text-h2 font-semibold text-marca-texto">
-              Propuestas activas
-            </h2>
-            <Link
-              href="/fondo"
-              className="touch-target flex items-center rounded-md text-support font-semibold text-marca-primario"
-            >
-              Ver el fondo
-            </Link>
-          </div>
-          <div className="mt-4 space-y-3">
-            {propuestasPendientes.slice(0, 3).map((p, i) => (
-              <Aparecer key={p.id} retraso={0.05 * i}>
-                <TarjetaPropuesta
-                  propuesta={p}
-                  usuarioId={usuario.id}
-                  esDirectivo={directivo}
-                />
-              </Aparecer>
-            ))}
-          </div>
-        </section>
-      ) : null}
+        {/* Lo que le toca a esta persona ahora — comerciante: su cuota; directivo:
+            las firmas que le esperan. */}
+        {!directivo && miCuotaPendiente ? (
+          <Aparecer retraso={0.1}>
+            <Card className="border-2 border-marca-secundario">
+              <CardContent>
+                <p className="flex items-center gap-2 text-h3 font-semibold text-marca-texto">
+                  <Warning size={24} weight="fill" color="#B8863B" aria-hidden="true" />
+                  Tu cuota está {miCuotaPendiente.estado === "mora" ? "en mora" : "pendiente"}
+                </p>
+                <p className="mt-2 text-body text-marca-tenue">
+                  Vence el {miCuotaPendiente.fechaVencimiento}
+                </p>
+                <Button asChild size="lg" className="mt-4 w-full sm:w-auto">
+                  <Link href="/fondo/pagar">
+                    <HandCoins size={22} weight="fill" aria-hidden="true" />
+                    Pagar mi cuota
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </Aparecer>
+        ) : !directivo ? (
+          <Aparecer retraso={0.1}>
+            <Card className="border-2 border-marca-primario">
+              <CardContent className="flex items-center gap-3">
+                <CheckCircle size={28} weight="fill" color="#4C8C5C" aria-hidden="true" />
+                <p className="text-body font-semibold text-marca-texto">
+                  Tu cuota de este mes ya está al día.
+                </p>
+              </CardContent>
+            </Card>
+          </Aparecer>
+        ) : esperandoMiFirma.length > 0 ? (
+          <Aparecer retraso={0.1}>
+            <Card className="border-2 border-marca-secundario">
+              <CardContent>
+                <p className="flex items-center gap-2 text-h3 font-semibold text-marca-texto">
+                  <Signature size={24} weight="fill" color="#B8863B" aria-hidden="true" />
+                  {esperandoMiFirma.length}{" "}
+                  {esperandoMiFirma.length === 1
+                    ? "propuesta espera tu firma"
+                    : "propuestas esperan tu firma"}
+                </p>
+                <p className="mt-2 text-body text-marca-tenue">
+                  Ningún gasto se ejecuta sin el acuerdo de varios directivos.
+                </p>
+                <Button asChild size="lg" className="mt-4 w-full sm:w-auto">
+                  <Link href={`/fondo/propuesta/${esperandoMiFirma[0].id}`}>
+                    Revisar la primera
+                    <ArrowRight size={20} weight="bold" />
+                  </Link>
+                </Button>
+              </CardContent>
+            </Card>
+          </Aparecer>
+        ) : null}
 
-      {/* Directivo: accesos rápidos */}
-      {directivo ? (
-        <div className="grid grid-cols-2 gap-3">
-          <Button asChild size="lg" className="h-auto flex-col gap-1.5 py-4">
+        {/* Acceso rápido a proponer — el de pagar ya vive en la tarjeta de
+            estado de arriba, repetirlo aquí sería el mismo botón dos veces. */}
+        {directivo ? (
+          <Button asChild size="lg">
             <Link href="/fondo/proponer">
-              <HandCoins size={24} weight="fill" aria-hidden="true" />
+              <HandCoins size={22} weight="fill" aria-hidden="true" />
               Proponer gasto
             </Link>
           </Button>
-          <Button asChild size="lg" variant="outline" className="h-auto flex-col gap-1.5 py-4">
-            <Link href="/fondo">
-              <Signature size={24} weight="duotone" aria-hidden="true" />
-              Ver el fondo
-            </Link>
-          </Button>
-        </div>
-      ) : null}
+        ) : null}
 
-      {/* Últimos anuncios */}
-      {anuncios.length > 0 ? (
-        <section>
-          <div className="flex items-baseline justify-between gap-3">
+        {/* Propuestas activas */}
+        {propuestasPendientes.length > 0 ? (
+          <section>
             <h2 className="text-h2 font-semibold text-marca-texto">
-              Tablón de anuncios
+              Propuestas activas
             </h2>
-            <Link
-              href="/anuncios"
-              className="touch-target flex items-center rounded-md text-support font-semibold text-marca-primario"
-            >
-              Ver todos
-            </Link>
+            <div className="mt-4 space-y-3">
+              {propuestasPendientes.map((p, i) => (
+                <Aparecer key={p.id} retraso={0.05 * i}>
+                  <TarjetaPropuesta
+                    propuesta={p}
+                    usuarioId={usuario.id}
+                    esDirectivo={directivo}
+                  />
+                </Aparecer>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        {directivo ? (
+          <Aparecer retraso={0.1}>
+            <DashboardDirectivo movimientos={movimientosFondo} cuotas={cuotas} />
+          </Aparecer>
+        ) : null}
+
+        <section>
+          <h2 className="text-h2 font-semibold text-marca-texto">
+            Historial de movimientos
+          </h2>
+          <div className="mt-4">
+            <ListaMovimientos movimientos={movimientosFondo} />
           </div>
-          <div className="mt-4 space-y-3">
-            {anuncios.slice(0, 2).map((a, i) => (
+        </section>
+      </div>
+
+      {/* Columna secundaria: tablón de anuncios */}
+      <div className="space-y-4 lg:sticky lg:top-20">
+        <div className="flex items-baseline justify-between gap-3">
+          <h2 className="text-h2 font-semibold text-marca-texto">
+            Tablón de anuncios
+          </h2>
+          <Link
+            href="/anuncios"
+            className="touch-target flex items-center rounded-md text-support font-semibold text-marca-primario"
+          >
+            Ver todos
+          </Link>
+        </div>
+        {anuncios.length === 0 ? (
+          <p className="rounded-lg border border-marca-borde bg-marca-superficie p-4 text-support text-marca-tenue">
+            Todavía no hay anuncios en el tablón.
+          </p>
+        ) : (
+          <div className="space-y-3">
+            {anuncios.slice(0, 4).map((a, i) => (
               <Aparecer key={a.id} retraso={0.05 * i}>
                 <Card>
                   <CardContent className="flex gap-3">
@@ -200,13 +216,8 @@ export default function InicioPage() {
               </Aparecer>
             ))}
           </div>
-        </section>
-      ) : null}
-
-      <p className="text-support text-marca-tenue">
-        Fondo actual: {soles(saldo)}. Verificable por cualquier miembro de{" "}
-        {asociacion.nombreMercado} en todo momento.
-      </p>
+        )}
+      </div>
     </div>
   );
 }

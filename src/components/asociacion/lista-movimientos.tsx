@@ -32,13 +32,13 @@ export function ListaMovimientos({
           >
             <span
               className={`grid size-10 shrink-0 place-items-center rounded-full ${
-                esIngreso ? "bg-[#e3ede6]" : "bg-[#f5e9d3]"
+                esIngreso ? "bg-[#e3ede6]" : "bg-[#f3e0de]"
               }`}
             >
               {esIngreso ? (
                 <ArrowDown size={20} weight="bold" color="#4C8C5C" aria-hidden="true" />
               ) : (
-                <ArrowUp size={20} weight="bold" color="#B8863B" aria-hidden="true" />
+                <ArrowUp size={20} weight="bold" color="#A6342E" aria-hidden="true" />
               )}
             </span>
             <div className="min-w-0 flex-1">
@@ -46,9 +46,11 @@ export function ListaMovimientos({
                 <p className="truncate text-body font-semibold text-marca-texto">
                   {m.descripcion}
                 </p>
+                {/* Convención financiera: lo que entra en verde, lo que sale del
+                    fondo en rojo — es una salida real de dinero, no un dato neutro. */}
                 <p
                   className={`shrink-0 text-body font-semibold ${
-                    esIngreso ? "text-marca-exito" : "text-marca-texto"
+                    esIngreso ? "text-marca-exito" : "text-marca-peligro"
                   }`}
                 >
                   {esIngreso ? "+" : "−"} {soles(m.monto)}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Warning } from "@phosphor-icons/react/ssr";
+import { CaretLeft, Warning } from "@phosphor-icons/react/ssr";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -71,6 +71,14 @@ export default function ProponerGastoPage() {
 
   return (
     <div className="space-y-6">
+      <Link
+        href="/fondo"
+        className="touch-target -ml-3 flex items-center gap-1 rounded-md pr-3 text-body font-semibold text-marca-texto transition-colors hover:bg-[#ece5d3]"
+      >
+        <CaretLeft size={22} weight="bold" aria-hidden="true" />
+        Volver al fondo
+      </Link>
+
       <div>
         <h1 className="text-display font-semibold text-marca-texto">
           Proponer gasto

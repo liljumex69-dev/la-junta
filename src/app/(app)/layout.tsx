@@ -1,34 +1,34 @@
 import Link from "next/link";
+
+import { AppSidebar } from "@/components/common/app-sidebar";
 import { Logo } from "@/components/common/logo";
-import { BottomNav } from "@/components/common/bottom-nav";
-import { MenuCuenta } from "@/components/common/menu-cuenta";
 import { GuardiaSesion } from "@/components/common/guardia-sesion";
+import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 
 /**
  * Shell de las pantallas con sesión iniciada.
  *
- * Mobile-first: una columna a todo el ancho en celular, centrada y con tope de 600px
- * en tablet y 720px en escritorio. Nunca se estiran las tarjetas del fondo o de
- * propuestas a todo el ancho de una pantalla grande — se perdería la sensación de
- * app enfocada.
+ * Sidebar persistente en escritorio con todas las secciones visibles de
+ * entrada — nada escondido detrás de un menú que alguien nuevo no sabe que
+ * existe. En móvil, el mismo sidebar se convierte en un panel deslizable
+ * (patrón de shadcn/ui), activado por el botón de menú de la barra superior.
  */
 export default function AppLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="flex min-h-dvh flex-col">
-      <header className="sticky top-0 z-40 border-b border-marca-borde bg-marca-fondo/95 backdrop-blur">
-        <div className="mx-auto flex h-16 w-full max-w-[720px] items-center justify-between px-4">
-          <Link href="/inicio" aria-label="Junta, ir al inicio" className="flex">
-            <Logo size={32} />
+    <SidebarProvider>
+      <AppSidebar />
+      <SidebarInset>
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-2 border-b border-marca-borde bg-marca-fondo/95 px-4 backdrop-blur">
+          <SidebarTrigger className="text-marca-texto hover:bg-[#ece5d3]" />
+          <Link href="/inicio" aria-label="Junta, ir al inicio" className="flex md:hidden">
+            <Logo size={28} />
           </Link>
-          <MenuCuenta />
-        </div>
-      </header>
+        </header>
 
-      <main className="contenedor-app flex-1 py-6">
-        <GuardiaSesion>{children}</GuardiaSesion>
-      </main>
-
-      <BottomNav />
-    </div>
+        <main className="contenedor-app flex-1 py-6">
+          <GuardiaSesion>{children}</GuardiaSesion>
+        </main>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }

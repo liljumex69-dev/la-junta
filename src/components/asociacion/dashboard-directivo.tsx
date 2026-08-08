@@ -2,6 +2,7 @@ import { ChartBar, DownloadSimple } from "@phosphor-icons/react/ssr";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { GraficoFondo } from "@/components/asociacion/grafico-fondo";
 import { soles } from "@/lib/junta/format";
 import {
   gastosPorCategoria,
@@ -46,9 +47,9 @@ export function DashboardDirectivo({
               {soles(ingresos)}
             </p>
           </div>
-          <div className="rounded-md bg-[#f5e9d3] p-3">
+          <div className="rounded-md bg-[#f3e0de] p-3">
             <p className="text-support text-marca-tenue">Gastos</p>
-            <p className="mt-1 text-body font-semibold text-marca-texto">
+            <p className="mt-1 text-body font-semibold text-marca-peligro">
               {soles(gastos)}
             </p>
           </div>
@@ -59,6 +60,8 @@ export function DashboardDirectivo({
             </p>
           </div>
         </div>
+
+        <GraficoFondo movimientos={movimientos} />
 
         {categorias.length > 0 ? (
           <div>

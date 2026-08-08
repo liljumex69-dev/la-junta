@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CheckCircle, QrCode } from "@phosphor-icons/react/ssr";
+import { CaretLeft, CheckCircle, QrCode } from "@phosphor-icons/react/ssr";
 
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/common/spinner";
@@ -87,6 +87,14 @@ export default function PagarCuotaPage() {
 
   return (
     <div className="space-y-6">
+      <Link
+        href="/fondo"
+        className="touch-target -ml-3 flex items-center gap-1 rounded-md pr-3 text-body font-semibold text-marca-texto transition-colors hover:bg-[#ece5d3]"
+      >
+        <CaretLeft size={22} weight="bold" aria-hidden="true" />
+        Volver al fondo
+      </Link>
+
       <div>
         <h1 className="text-display font-semibold text-marca-texto">
           Pagar mi cuota

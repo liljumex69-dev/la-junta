@@ -7,7 +7,7 @@ import { Aparecer } from "@/components/common/aparecer";
 import { TarjetaSaldoAhorro } from "@/components/ahorro/tarjeta-saldo-ahorro";
 import { FormularioMovimientoAhorro } from "@/components/ahorro/formulario-movimiento-ahorro";
 import { ListaMovimientosAhorro } from "@/components/ahorro/lista-movimientos-ahorro";
-import { EvolucionAhorro } from "@/components/ahorro/evolucion-ahorro";
+import { GraficoAhorro } from "@/components/ahorro/grafico-ahorro";
 import { useJunta } from "@/lib/junta/context";
 
 export default function AhorroPage() {
@@ -35,7 +35,7 @@ export default function AhorroPage() {
         <TarjetaSaldoAhorro saldo={saldo} />
       </Aparecer>
 
-      <EvolucionAhorro movimientos={ahorro} />
+      <GraficoAhorro movimientos={ahorro} />
 
       <FormularioMovimientoAhorro />
 

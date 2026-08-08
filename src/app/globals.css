@@ -49,6 +49,16 @@
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
 
+  /* Sidebar de navegación — superficie clara con acento verde institucional en
+     hover/activo (mismo verde-sobre-tinte-claro que ya usan las tarjetas de
+     éxito del resto de la app, no un color nuevo). */
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
   /* Radios exactos del documento: tarjetas 12, controles 10, badges 8 */
   --radius-sm: 8px;
   --radius-md: 10px;
@@ -90,13 +100,23 @@
   --secondary-foreground: #24312b;
   --muted: #ece5d3;
   --muted-foreground: #7c8a80;
-  --accent: #b8863b;
-  --accent-foreground: #24312b;
+  /* Antes bronce sobre texto oscuro (#b8863b / #24312b): contraste real ~4.2:1,
+     por debajo del mínimo AA de 4.5:1 para texto normal — insuficiente para el
+     hover/foco de menús y selects. Verde institucional + blanco da ~7.9:1. */
+  --accent: #1f5c3d;
+  --accent-foreground: #ffffff;
   --destructive: #a6342e;
   --border: #ddd6c4;
   --input: #ddd6c4;
   --ring: #1f5c3d;
   --radius: 12px;
+
+  --sidebar: #faf7f0;
+  --sidebar-foreground: #24312b;
+  --sidebar-accent: #e3ede6;
+  --sidebar-accent-foreground: #1f5c3d;
+  --sidebar-border: #ddd6c4;
+  --sidebar-ring: #1f5c3d;
 }
 
 @layer base {

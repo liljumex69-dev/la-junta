@@ -1,16 +1,10 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
   ArrowsClockwise,
-  CaretDown,
-  ChartBar,
-  ChatCircleDots,
-  Gear,
-  Megaphone,
-  PiggyBank,
+  CaretUpDown,
   SignOut,
   UserSwitch,
 } from "@phosphor-icons/react/ssr";
@@ -23,29 +17,27 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { SidebarMenuButton } from "@/components/ui/sidebar";
 import { useJunta } from "@/lib/junta/context";
 import { ETIQUETA_CARGO } from "@/lib/junta/format";
 
 /**
- * Menú de cuenta del encabezado.
+ * Pie de perfil del sidebar.
  *
- * Reúne lo que no cabe en la barra inferior de tres destinos: cumplimiento, ahorro
- * personal, anuncios, configuración (solo directivos) y cerrar sesión.
- *
- * Incluye además el cambio de perfil, que existe solo para recorrer la demo con los
- * dos roles (comerciante/directivo) y cualquier cuenta nueva registrada. En
- * producción esa sección desaparece — cada quien entra solo a su propia cuenta.
+ * La navegación real (cumplimiento, ahorro, anuncios, configuración, ayuda) ya
+ * vive como enlaces directos y siempre visibles en el sidebar — nada de eso
+ * debe estar escondido detrás de un clic. Lo único que queda aquí es lo que no
+ * es navegación: identidad de la cuenta, cerrar sesión, y el cambio de perfil
+ * que existe solo para recorrer la demo con los dos roles de prueba.
  */
 export function MenuCuenta() {
   const router = useRouter();
   const { usuario, usuarios, iniciarSesion, cerrarSesion } = useJunta();
 
   // Controlado a propósito: los ítems que navegan con `router.push` en su
-  // `onSelect` (cambiar de perfil, cerrar sesión) pueden interrumpir el cierre
-  // automático de Radix a mitad de la transición de ruta, dejando el menú
-  // "cerrado" en data-state pero todavía montado con pointer-events activos,
-  // interceptando clics invisibles en el resto de la página. Cerrarlo nosotros
-  // mismos, antes de navegar, evita ese estado a medias.
+  // `onSelect` pueden interrumpir el cierre automático de Radix a mitad de la
+  // transición de ruta, dejando el menú montado con pointer-events activos.
+  // Cerrarlo nosotros mismos, antes de navegar, evita ese estado a medias.
   const [abierto, setAbierto] = useState(false);
 
   if (!usuario) return null;
@@ -55,25 +47,32 @@ export function MenuCuenta() {
   return (
     <DropdownMenu open={abierto} onOpenChange={setAbierto}>
       <DropdownMenuTrigger asChild>
-        <button
-          type="button"
-          className="touch-target flex items-center gap-2 rounded-md pl-2 pr-1 transition-colors hover:bg-[#ece5d3]"
-          aria-label={`Cuenta de ${usuario.nombre}`}
+        <SidebarMenuButton
+          size="lg"
+          className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
-          <span className="hidden text-support font-semibold text-marca-texto sm:inline">
-            {usuario.nombre.split(" ")[0]}
-          </span>
           <span
-            className="grid size-10 place-items-center rounded-full bg-marca-primario text-support font-semibold text-white"
+            className="grid size-8 shrink-0 place-items-center rounded-full bg-marca-primario text-support font-semibold text-white"
             aria-hidden="true"
           >
             {usuario.iniciales}
           </span>
-          <CaretDown size={16} weight="bold" className="text-marca-tenue" aria-hidden="true" />
-        </button>
+          <span className="grid min-w-0 flex-1 text-left leading-tight">
+            <span className="truncate text-body font-semibold text-marca-texto">
+              {usuario.nombre}
+            </span>
+            <span className="truncate text-support text-marca-tenue">
+              {esDirectivo
+                ? `Directivo · ${ETIQUETA_CARGO[usuario.cargo ?? "vocal"]}`
+                : `Comerciante · Puesto ${usuario.numeroPuesto ?? "—"}`}
+            </span>
+          </span>
+          <CaretUpDown size={16} weight="bold" className="text-marca-tenue" aria-hidden="true" />
+        </SidebarMenuButton>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent
+        side="top"
         align="end"
         className="w-72 rounded-lg border-marca-borde bg-marca-superficie p-2"
       >
@@ -84,47 +83,7 @@ export function MenuCuenta() {
           <span className="mt-0.5 block text-support text-marca-tenue">
             +51 {usuario.telefono}
           </span>
-          <span className="mt-2 inline-flex items-center rounded-sm bg-[#e9f0ec] px-2.5 py-1 text-support font-semibold text-marca-primario">
-            {esDirectivo
-              ? `Directivo · ${ETIQUETA_CARGO[usuario.cargo ?? "vocal"]}`
-              : `Comerciante · Puesto ${usuario.numeroPuesto ?? "—"}`}
-          </span>
         </DropdownMenuLabel>
-
-        <DropdownMenuSeparator className="bg-marca-borde" />
-
-        <DropdownMenuItem asChild>
-          <Link href="/cumplimiento" className="min-h-[44px] text-body">
-            <ChartBar size={22} weight="duotone" aria-hidden="true" />
-            Historial de cumplimiento
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/ahorro" className="min-h-[44px] text-body">
-            <PiggyBank size={22} weight="duotone" aria-hidden="true" />
-            Mi ahorro personal
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/anuncios" className="min-h-[44px] text-body">
-            <Megaphone size={22} weight="duotone" aria-hidden="true" />
-            Tablón de anuncios
-          </Link>
-        </DropdownMenuItem>
-        {esDirectivo ? (
-          <DropdownMenuItem asChild>
-            <Link href="/configuracion" className="min-h-[44px] text-body">
-              <Gear size={22} weight="duotone" aria-hidden="true" />
-              Configuración de la asociación
-            </Link>
-          </DropdownMenuItem>
-        ) : null}
-        <DropdownMenuItem asChild>
-          <Link href="/soporte" className="min-h-[44px] text-body">
-            <ChatCircleDots size={22} weight="duotone" aria-hidden="true" />
-            Centro de ayuda
-          </Link>
-        </DropdownMenuItem>
 
         {/* Solo para la demo: permite recorrer el producto con otros perfiles. */}
         <DropdownMenuSeparator className="bg-marca-borde" />

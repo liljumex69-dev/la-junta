@@ -30,7 +30,9 @@ export function TarjetaPropuesta({
     <div className="rounded-lg border border-marca-borde bg-marca-superficie p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <p className="text-h3 font-semibold text-marca-texto">
+          {/* Es un gasto — dinero que sale del fondo si se junta el umbral —
+              por eso va en rojo igual que en el historial de movimientos. */}
+          <p className="text-h3 font-semibold text-marca-peligro">
             {soles(propuesta.monto)}
           </p>
           <p className="mt-0.5 text-support text-marca-tenue">

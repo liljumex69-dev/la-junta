@@ -149,7 +149,7 @@ export default function FirmarPropuestaPage() {
         <div className="flex items-start justify-between gap-3">
           <div>
             <p className="text-support text-marca-tenue">{propuesta.categoria}</p>
-            <p className="mt-0.5 text-[32px] leading-none font-semibold text-marca-texto">
+            <p className="mt-0.5 text-[32px] leading-none font-semibold text-marca-peligro">
               {soles(propuesta.monto)}
             </p>
           </div>

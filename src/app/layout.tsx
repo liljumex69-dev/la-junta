@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { ProveedorJunta } from "@/lib/junta/context";
 import "./globals.css";
 
@@ -36,7 +37,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="es-PE" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-background text-foreground">
-        <ProveedorJunta>{children}</ProveedorJunta>
+        <ProveedorJunta>
+          <TooltipProvider delayDuration={300}>{children}</TooltipProvider>
+        </ProveedorJunta>
         <Toaster position="top-center" />
       </body>
     </html>

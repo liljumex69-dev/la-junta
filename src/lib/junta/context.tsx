@@ -26,6 +26,7 @@ import type {
   ConfiguracionAsociacion,
   ContactoConfianza,
   CuotaComerciante,
+  DirectivoInicial,
   MovimientoAhorro,
   MovimientoFondo,
   PropuestaGasto,
@@ -120,8 +121,8 @@ interface ContextoJunta {
     nombreMercado: string;
     numeroPuestos: number;
     umbralFirmas: number;
-    totalFirmantes: number;
     cargo: CargoDirectivo;
+    directivosIniciales: DirectivoInicial[];
     moraActiva: boolean;
     moraPorcentaje: number;
   }) => Asociacion;
@@ -267,14 +268,17 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
 
     crearAsociacion: (datos) => {
       const yo = usuarioActual()!;
+      // El fundador es un firmante más, sin poder especial sobre los demás — el
+      // total de firmantes es él más el directorio que acaba de nombrar.
+      const totalFirmantes = 1 + datos.directivosIniciales.length;
       const nueva: Asociacion = {
         id: nuevoId("a"),
         nombreMercado: datos.nombreMercado.trim(),
         numeroPuestos: datos.numeroPuestos,
         codigoInvitacion: codigoDesdeNombre(datos.nombreMercado),
         configuracion: {
-          umbralFirmas: datos.umbralFirmas,
-          totalFirmantes: datos.totalFirmantes,
+          umbralFirmas: Math.min(datos.umbralFirmas, totalFirmantes),
+          totalFirmantes,
           mora: {
             activa: datos.moraActiva,
             porcentaje: datos.moraPorcentaje,
@@ -283,6 +287,7 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
           notificacionesActivas: true,
         },
         categorias: ["Seguridad", "Mantenimiento", "Mejoras", "Otras"],
+        directivosIniciales: datos.directivosIniciales,
         creadaEn: new Date().toISOString().slice(0, 10),
       };
       // TODO: conectar a Safe/smart contract — desplegar un Safe multifirma en

@@ -54,6 +54,17 @@ export interface ConfiguracionAsociacion {
   notificacionesActivas: boolean;
 }
 
+/**
+ * Directivo nombrado al fundar la asociación, antes de que tenga cuenta propia.
+ * En el prototipo es solo texto informativo para definir el directorio inicial y el
+ * umbral — en producción, cada uno se convierte en firmante real del Safe cuando
+ * completa su propio registro con el enlace que le llega.
+ */
+export interface DirectivoInicial {
+  nombre: string;
+  cargo: CargoDirectivo;
+}
+
 export interface Asociacion {
   id: string;
   nombreMercado: string;
@@ -62,6 +73,8 @@ export interface Asociacion {
   configuracion: ConfiguracionAsociacion;
   /** Categorías de gasto/ingreso, compartidas entre el panel del fondo y el ahorro personal. */
   categorias: string[];
+  /** Directorio declarado al fundar, sin contar al fundador (que sí tiene cuenta). */
+  directivosIniciales: DirectivoInicial[];
   creadaEn: string;
 }
 

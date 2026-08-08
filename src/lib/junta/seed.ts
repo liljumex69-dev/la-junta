@@ -35,6 +35,12 @@ export const ASOCIACION_DEMO: Asociacion = {
     notificacionesActivas: true,
   },
   categorias: ["Seguridad", "Mantenimiento", "Mejoras", "Otras"],
+  directivosIniciales: [
+    { nombre: "Rosario Fernández Paredes", cargo: "presidente" },
+    { nombre: "Julio Bautista Campos", cargo: "secretario" },
+    { nombre: "Carmen Salazar Díaz", cargo: "vocal" },
+    { nombre: "Teodoro Quinteros Vega", cargo: "vocal" },
+  ],
   creadaEn: "2026-01-15",
 };
 

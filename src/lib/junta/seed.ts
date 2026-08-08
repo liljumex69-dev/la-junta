@@ -78,6 +78,51 @@ export const USUARIO_DIRECTIVO: Usuario = {
 export const USUARIOS_SEED: Usuario[] = [USUARIO_COMERCIANTE, USUARIO_DIRECTIVO];
 
 export const MOVIMIENTOS_FONDO_SEED: MovimientoFondo[] = [
+  // Acumulado de meses previos (febrero-mayo), agrupado por mes en vez de por
+  // puesto individual: son 84 puestos pagando desde enero, y desglosarlos uno a
+  // uno aquí no aportaría nada a la demo. Sin este acumulado el fondo quedaba en
+  // números rojos con solo los movimientos de junio en adelante, lo cual
+  // contradice la idea central del producto — un fondo protegido, no uno en deuda.
+  {
+    id: "mf-h1",
+    asociacionId: "a-ves",
+    tipo: "cuota",
+    monto: 3900,
+    fecha: "2026-02-10",
+    descripcion: "Cuotas de febrero — 78 puestos",
+    referenciaId: "acumulado-2026-02",
+    hashSimulado: "0x4a19…20e6",
+  },
+  {
+    id: "mf-h2",
+    asociacionId: "a-ves",
+    tipo: "cuota",
+    monto: 4000,
+    fecha: "2026-03-10",
+    descripcion: "Cuotas de marzo — 80 puestos",
+    referenciaId: "acumulado-2026-03",
+    hashSimulado: "0x6d02…8f3c",
+  },
+  {
+    id: "mf-h3",
+    asociacionId: "a-ves",
+    tipo: "cuota",
+    monto: 3950,
+    fecha: "2026-04-10",
+    descripcion: "Cuotas de abril — 79 puestos",
+    referenciaId: "acumulado-2026-04",
+    hashSimulado: "0x1e77…b459",
+  },
+  {
+    id: "mf-h4",
+    asociacionId: "a-ves",
+    tipo: "cuota",
+    monto: 3850,
+    fecha: "2026-05-10",
+    descripcion: "Cuotas de mayo — 77 puestos",
+    referenciaId: "acumulado-2026-05",
+    hashSimulado: "0xc890…3d17",
+  },
   {
     id: "mf-1",
     asociacionId: "a-ves",

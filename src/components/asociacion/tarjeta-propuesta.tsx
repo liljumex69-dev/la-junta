@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { CheckCircle, Signature } from "@phosphor-icons/react/ssr";
+import { CheckCircle, Info, Signature } from "@phosphor-icons/react/ssr";
 
 import { Badge } from "@/components/ui/badge";
 import { soles } from "@/lib/junta/format";
@@ -68,20 +68,29 @@ export function TarjetaPropuesta({
         </div>
       ) : null}
 
-      {propuesta.estado === "pendiente" && esDirectivo ? (
-        yo_firme ? (
-          <p className="mt-3 flex items-center gap-2 text-support font-semibold text-marca-exito">
-            <CheckCircle size={18} weight="fill" aria-hidden="true" />
-            Ya firmaste. Faltan {faltan} {faltan === 1 ? "firma" : "firmas"}.
-          </p>
+      {propuesta.estado === "pendiente" ? (
+        esDirectivo ? (
+          yo_firme ? (
+            <p className="mt-3 flex items-center gap-2 text-support font-semibold text-marca-exito">
+              <CheckCircle size={18} weight="fill" aria-hidden="true" />
+              Ya firmaste. Faltan {faltan} {faltan === 1 ? "firma" : "firmas"}.
+            </p>
+          ) : (
+            <Link
+              href={`/fondo/propuesta/${propuesta.id}`}
+              className="touch-target mt-3 flex items-center gap-2 rounded-md text-support font-semibold text-marca-primario underline underline-offset-4"
+            >
+              <Signature size={18} weight="duotone" aria-hidden="true" />
+              Revisar y firmar
+            </Link>
+          )
         ) : (
-          <Link
-            href={`/fondo/propuesta/${propuesta.id}`}
-            className="touch-target mt-3 flex items-center gap-2 rounded-md text-support font-semibold text-marca-primario underline underline-offset-4"
-          >
-            <Signature size={18} weight="duotone" aria-hidden="true" />
-            Revisar y firmar
-          </Link>
+          // Un comerciante no firma — solo el directorio lo hace — pero merece la
+          // misma claridad: qué está pasando y por qué no hay un botón para él acá.
+          <p className="mt-3 flex items-center gap-2 text-support text-marca-tenue">
+            <Info size={18} weight="duotone" aria-hidden="true" />
+            Firman los directivos. Faltan {faltan} {faltan === 1 ? "firma" : "firmas"} para ejecutarse.
+          </p>
         )
       ) : null}
     </div>

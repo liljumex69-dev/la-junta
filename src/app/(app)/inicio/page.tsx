@@ -170,9 +170,11 @@ export default function InicioPage() {
         </section>
       </div>
 
-      {/* Columna secundaria: tablón de anuncios */}
-      <div className="space-y-4 lg:sticky lg:top-20">
-        <div className="flex items-baseline justify-between gap-3">
+      {/* Columna secundaria: tablón de anuncios. El encabezado queda fijo y solo
+          la lista scrollea dentro de su propia altura — así se puede recorrer
+          todo el tablón sin depender del scroll de la página entera. */}
+      <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
+        <div className="flex shrink-0 items-baseline justify-between gap-3">
           <h2 className="text-h2 font-semibold text-marca-texto">
             Tablón de anuncios
           </h2>
@@ -188,8 +190,8 @@ export default function InicioPage() {
             Todavía no hay anuncios en el tablón.
           </p>
         ) : (
-          <div className="space-y-3">
-            {anuncios.slice(0, 4).map((a, i) => (
+          <div className="space-y-3 overflow-y-auto lg:pr-1">
+            {anuncios.map((a, i) => (
               <Aparecer key={a.id} retraso={0.05 * i}>
                 <Card>
                   <CardContent className="flex gap-3">

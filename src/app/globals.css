@@ -3,8 +3,8 @@
 @import "shadcn/tailwind.css";
 
 /*
-  Minka — sistema de diseño
-  Fuente de verdad: docs/Minka-Sistema-de-Diseno.md
+  Junta — sistema de diseño
+  Fuente de verdad: docs/Junta-Sistema-de-Diseno.md
   Solo tema claro. El modo oscuro está explícitamente fuera de alcance del MVP,
   por eso no se declaran variables dobles ni el bloque .dark.
 */
@@ -16,18 +16,20 @@
   --font-heading: var(--font-inter);
   --font-mono: var(--font-inter);
 
-  /* Tokens de marca Minka — nombrados igual que en el documento de diseño */
-  --color-minka-primary: #bf312a;
-  --color-minka-primary-dark: #992722;
-  --color-minka-secondary: #e38e20;
-  --color-minka-bg: #f5efe6;
-  --color-minka-surface: #fbf7f1;
-  --color-minka-text: #3a2e28;
-  --color-minka-muted: #8a7a6d;
-  --color-minka-border: #e3dacd;
-  --color-minka-success: #4b6b3a;
-  --color-minka-danger: #9c3232;
-  --color-minka-late: #e38e20;
+  /* Tokens de marca — nombrados de forma genérica ("marca", no "junta") porque
+     "junta" ya tiene un significado de dominio propio en este producto (junta
+     directiva). Usar el mismo prefijo para colores hubiera sido confuso. */
+  --color-marca-primario: #1f5c3d;
+  --color-marca-primario-oscuro: #163f2a;
+  --color-marca-secundario: #b8863b;
+  --color-marca-fondo: #f3efe4;
+  --color-marca-superficie: #faf7f0;
+  --color-marca-texto: #24312b;
+  --color-marca-tenue: #7c8a80;
+  --color-marca-borde: #ddd6c4;
+  --color-marca-exito: #4c8c5c;
+  --color-marca-peligro: #a6342e;
+  --color-marca-mora: #b8863b;
 
   /* Mapeo semántico shadcn/ui */
   --color-ring: var(--ring);
@@ -56,9 +58,9 @@
   --radius-3xl: 20px;
   --radius-4xl: 24px;
 
-  /* Sombras cálidas: usan el marrón de texto, nunca negro puro */
-  --shadow-card: 0 1px 3px rgba(58, 46, 40, 0.06);
-  --shadow-elevated: 0 4px 16px rgba(58, 46, 40, 0.12);
+  /* Sombras: usan el texto primario (verde-carbón) en baja opacidad, nunca negro puro */
+  --shadow-card: 0 1px 3px rgba(36, 49, 43, 0.07);
+  --shadow-elevated: 0 4px 16px rgba(36, 49, 43, 0.14);
 
   /* Escala tipográfica del documento */
   --text-display: 28px;
@@ -76,24 +78,24 @@
 }
 
 :root {
-  --background: #f5efe6;
-  --foreground: #3a2e28;
-  --card: #fbf7f1;
-  --card-foreground: #3a2e28;
-  --popover: #fbf7f1;
-  --popover-foreground: #3a2e28;
-  --primary: #bf312a;
-  --primary-foreground: #fbf7f1;
-  --secondary: #e38e20;
-  --secondary-foreground: #3a2e28;
-  --muted: #ece4d8;
-  --muted-foreground: #8a7a6d;
-  --accent: #e38e20;
-  --accent-foreground: #3a2e28;
-  --destructive: #9c3232;
-  --border: #e3dacd;
-  --input: #e3dacd;
-  --ring: #bf312a;
+  --background: #f3efe4;
+  --foreground: #24312b;
+  --card: #faf7f0;
+  --card-foreground: #24312b;
+  --popover: #faf7f0;
+  --popover-foreground: #24312b;
+  --primary: #1f5c3d;
+  --primary-foreground: #faf7f0;
+  --secondary: #b8863b;
+  --secondary-foreground: #24312b;
+  --muted: #ece5d3;
+  --muted-foreground: #7c8a80;
+  --accent: #b8863b;
+  --accent-foreground: #24312b;
+  --destructive: #a6342e;
+  --border: #ddd6c4;
+  --input: #ddd6c4;
+  --ring: #1f5c3d;
   --radius: 12px;
 }
 
@@ -118,7 +120,7 @@
   /* Foco siempre visible y de alto contraste — el público objetivo incluye
      personas que navegan con teclado o con precisión táctil reducida */
   :focus-visible {
-    outline: 3px solid var(--color-minka-primary);
+    outline: 3px solid var(--color-marca-primario);
     outline-offset: 2px;
   }
 
@@ -146,19 +148,20 @@
   }
 
   /* Ancho máximo por breakpoint: móvil full, tablet 600, escritorio 720.
-     Nunca estirar tarjetas de junta/pago a todo el ancho de una pantalla grande. */
-  .minka-container {
+     Nunca estirar tarjetas del fondo o de propuestas a todo el ancho de una
+     pantalla grande — se pierde la sensación de app enfocada. */
+  .contenedor-app {
     width: 100%;
     margin-inline: auto;
     padding-inline: 16px;
   }
   @media (min-width: 600px) {
-    .minka-container {
+    .contenedor-app {
       max-width: 600px;
     }
   }
   @media (min-width: 1024px) {
-    .minka-container {
+    .contenedor-app {
       max-width: 720px;
     }
   }

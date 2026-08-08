@@ -5,7 +5,7 @@ import { Slot } from "radix-ui"
 import { cn } from "@/lib/utils"
 
 /*
-  Botón Minka.
+  Botón de Junta.
   Se reajustaron los tamaños que trae shadcn por defecto (h-8 / 32px, texto 14px):
   el sistema de diseño exige área táctil mínima de 44x44px y texto de botón de 16px
   peso 600. Ningún tamaño aquí baja de 44px, ni siquiera los "pequeños", para que
@@ -17,20 +17,22 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-minka-primary text-white hover:bg-minka-primary-dark active:bg-minka-primary-dark",
+          "bg-marca-primario text-white hover:bg-marca-primario-oscuro active:bg-marca-primario-oscuro",
+        // Texto oscuro sobre el bronce, no blanco: el bronce #B8863B es un tono
+        // medio donde el blanco no llega al contraste mínimo (AA) para texto normal.
         secondary:
-          "bg-minka-secondary text-minka-text hover:bg-[#cf7f19] active:bg-[#cf7f19]",
+          "bg-marca-secundario text-marca-texto hover:bg-[#a3782f] active:bg-[#a3782f]",
         outline:
-          "border-2 border-minka-border bg-minka-surface text-minka-text hover:bg-[#f0e8db]",
-        ghost: "text-minka-text hover:bg-[#ece4d8]",
+          "border-2 border-marca-borde bg-marca-superficie text-marca-texto hover:bg-[#eee5cf]",
+        ghost: "text-marca-texto hover:bg-[#ece5d3]",
         destructive:
-          "bg-minka-danger text-white hover:bg-[#832a2a] active:bg-[#832a2a]",
-        link: "text-minka-primary underline underline-offset-4 hover:text-minka-primary-dark",
+          "bg-marca-peligro text-white hover:bg-[#832722] active:bg-[#832722]",
+        link: "text-marca-primario underline underline-offset-4 hover:text-marca-primario-oscuro",
       },
       size: {
         // 48px: tamaño estándar de acción en la app
         default: "h-12 px-5",
-        // 56px: CTAs de flujos de dinero (aportar, cobrar, confirmar)
+        // 56px: CTAs de flujos de dinero (cuota, propuesta, firma)
         lg: "h-14 px-6 text-h3",
         // 44px: mínimo absoluto permitido
         sm: "h-11 px-4",

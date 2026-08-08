@@ -7,13 +7,12 @@ import { cn } from "@/lib/utils";
 /**
  * Carrusel del hero.
  *
- * Fotografía real y cálida, en el orden definido para la landing: la vendedora con
- * su celular abre, el intercambio de manos es el corazón conceptual (el significado
- * de "minka": trabajo hecho entre todos), y la toma abierta del mercado cierra.
+ * Fotografía real y cálida de mercados peruanos, en el orden que pide el documento:
+ * vendedora con su celular, grupo conversando con confianza (directivos o
+ * comerciantes), un intercambio de manos, y una toma abierta del mercado que cierra.
  *
- * El movimiento es un crossfade de 250ms cada 5s — calmado, no una demo llamativa.
- * Si el sistema pide movimiento reducido, el carrusel se detiene y queda como una
- * imagen fija con controles.
+ * El movimiento es un crossfade de 250ms cada 5s — calmado, coherente con un
+ * producto que maneja el fondo de una asociación, no una demo tecnológica.
  */
 const IMAGENES = [
   {
@@ -58,7 +57,7 @@ export function HeroCarousel() {
       onMouseEnter={() => setEnPausa(true)}
       onMouseLeave={() => setEnPausa(false)}
     >
-      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-minka-border shadow-elevated sm:aspect-[3/2]">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-marca-borde shadow-elevated sm:aspect-[3/2]">
         {IMAGENES.map((img, i) => (
           <Image
             key={img.src}
@@ -93,8 +92,8 @@ export function HeroCarousel() {
               className={cn(
                 "block h-2.5 rounded-sm transition-all duration-200",
                 i === activa
-                  ? "w-8 bg-minka-primary"
-                  : "w-2.5 bg-minka-border"
+                  ? "w-8 bg-marca-primario"
+                  : "w-2.5 bg-marca-borde"
               )}
             />
           </button>

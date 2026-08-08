@@ -1,21 +1,21 @@
 import Link from "next/link";
 import {
   ArrowRight,
-  CalendarCheck,
-  ChartLineUp,
+  Buildings,
   Check,
-  HandCoins,
+  Eye,
   Handshake,
-  Medal,
-  Sparkle,
-  UsersThree,
+  HandCoins,
+  Megaphone,
+  ShieldCheck,
+  Signature,
+  Vault,
   WhatsappLogo,
 } from "@phosphor-icons/react/ssr";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Logo } from "@/components/minka/logo";
-import { NIVELES } from "@/lib/minka/niveles";
+import { Logo } from "@/components/common/logo";
 import { HeroCarousel } from "@/components/landing/hero-carousel";
 import { SiteHeader } from "@/components/landing/site-header";
 
@@ -31,55 +31,52 @@ import { SiteHeader } from "@/components/landing/site-header";
 
 const PASOS = [
   {
-    icono: UsersThree,
-    titulo: "Crea o únete a una junta",
+    icono: Buildings,
+    titulo: "Crea o únete a tu asociación",
     texto:
-      "Arma tu junta con la gente que ya conoces, o entra a una con el código que te compartan.",
-  },
-  {
-    icono: CalendarCheck,
-    titulo: "Aporta tu cuota",
-    texto:
-      "Cada semana, quincena o mes pones el mismo monto. Te avisamos antes de cada fecha.",
+      "El directivo funda la asociación de su mercado, o el comerciante entra con el código de su puesto.",
   },
   {
     icono: HandCoins,
-    titulo: "Recibe tu turno",
-    texto:
-      "Cuando te toca, el pozo completo pasa a tus manos. Sin descuentos ni retenciones.",
+    titulo: "Paga tu cuota",
+    texto: "Escaneas un código QR con Yape o Plin, tal como ya lo haces hoy. Nada nuevo que aprender.",
   },
   {
-    icono: ChartLineUp,
-    titulo: "Construye tu historial",
-    texto:
-      "Cada cuota puntual queda registrada y te abre mejores condiciones en la siguiente junta.",
+    icono: Eye,
+    titulo: "Ves el fondo en todo momento",
+    texto: "El saldo, cada movimiento y quién propuso qué queda visible y verificable para cualquier miembro.",
+  },
+  {
+    icono: Signature,
+    titulo: "Los gastos se aprueban entre varios",
+    texto: "Un directivo propone, los demás firman. Solo se ejecuta cuando se junta el número de firmas acordado.",
   },
 ];
 
 const BENEFICIOS = [
   {
+    icono: ShieldCheck,
+    titulo: "Nadie mueve el fondo solo",
+    texto:
+      "Ni el tesorero, ni el presidente, ni nadie individual puede sacar dinero del fondo. Cada gasto necesita el acuerdo de varios directivos, siempre.",
+  },
+  {
+    icono: Eye,
+    titulo: "Todo verificable, en todo momento",
+    texto:
+      "El historial completo del fondo es público para los miembros de la asociación — no hay que confiar en la palabra de nadie, se puede comprobar.",
+  },
+  {
     icono: Handshake,
-    titulo: "Nadie puede desaparecer con el dinero",
+    titulo: "Se usa como ya lo conoces",
     texto:
-      "El dinero del grupo no lo guarda una persona: lo guarda un contrato que cumple las reglas que ustedes fijaron. Ni el organizador ni Minka pueden tocarlo.",
-  },
-  {
-    icono: Sparkle,
-    titulo: "Se usa como cualquier app",
-    texto:
-      "Entras con tu número de celular y listo. No necesitas saber nada de tecnología: eso queda por debajo, donde no estorba.",
-  },
-  {
-    icono: Medal,
-    titulo: "Tu historial te acompaña siempre",
-    texto:
-      "Cumplir se nota. Mientras más juntas completas con gente distinta, menos garantía te piden para cobrar temprano.",
+      "Pagas por Yape o Plin. Sin wallets, sin jerga técnica, sin nada nuevo que memorizar. La tecnología queda invisible.",
   },
   {
     icono: WhatsappLogo,
     titulo: "Te avisamos por WhatsApp",
     texto:
-      "Los recordatorios de cuota llegan por WhatsApp, donde ya estás. Sin tener que abrir la app para enterarte.",
+      "Recordatorios de cuota y de propuestas esperando tu firma llegan por WhatsApp, donde ya estás.",
   },
 ];
 
@@ -93,24 +90,23 @@ export default function LandingPage() {
         <section className="px-4 pt-10 pb-14 sm:pt-16">
           <div className="mx-auto grid w-full max-w-6xl items-center gap-10 lg:grid-cols-2 lg:gap-14">
             <div>
-              <p className="mb-4 inline-flex items-center rounded-sm bg-[#f4e2d0] px-3 py-1.5 text-support font-semibold text-[#8a5810]">
-                La junta de toda la vida, sin el riesgo de siempre
+              <p className="mb-4 inline-flex items-center rounded-sm bg-[#f0e3c9] px-3 py-1.5 text-support font-semibold text-[#7a5a26]">
+                El fondo de tu mercado, fuera del cajón del tesorero
               </p>
-              <h1 className="text-[36px] leading-[1.15] font-semibold tracking-tight text-minka-text sm:text-[44px]">
-                Tu junta sigue igual. Lo que cambia es que ya nadie puede irse con
-                el dinero.
+              <h1 className="text-[36px] leading-[1.15] font-semibold tracking-tight text-marca-texto sm:text-[44px]">
+                Un mercado de Villa El Salvador perdió su fondo colectivo por
+                guardarlo en efectivo. No tenía que pasar así.
               </h1>
-              <p className="mt-5 max-w-xl text-h3 leading-relaxed font-normal text-minka-text/85">
-                Minka organiza tu junta o pandero con las mismas reglas de siempre:
-                todos ponen su cuota y, por turnos, a cada quien le toca el pozo
-                completo. La diferencia es que el dinero del grupo no lo guarda
-                nadie — ni el organizador, ni Minka.
+              <p className="mt-5 max-w-xl text-h3 leading-relaxed font-normal text-marca-texto/85">
+                Junta protege el fondo de tu asociación con firma múltiple: el
+                dinero vive en una bóveda digital que ningún directivo puede abrir
+                solo. Se necesitan varias firmas — siempre.
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg">
                   <Link href="/registro">
-                    Crear mi cuenta
+                    Proteger el fondo de mi mercado
                     <ArrowRight size={22} weight="bold" />
                   </Link>
                 </Button>
@@ -119,8 +115,8 @@ export default function LandingPage() {
                 </Button>
               </div>
 
-              <p className="mt-5 text-support text-minka-muted">
-                Crear y participar en juntas privadas es gratis, siempre.
+              <p className="mt-5 text-support text-marca-tenue">
+                Pagas por Yape o Plin, como siempre. Nada de wallets ni jerga cripto.
               </p>
             </div>
 
@@ -131,14 +127,15 @@ export default function LandingPage() {
         {/* Cómo funciona */}
         <section
           id="como-funciona"
-          className="scroll-mt-20 border-t border-minka-border bg-minka-surface px-4 py-16"
+          className="scroll-mt-20 border-t border-marca-borde bg-marca-superficie px-4 py-16"
         >
           <div className="mx-auto w-full max-w-6xl">
-            <h2 className="text-h2 font-semibold text-minka-text">
+            <h2 className="text-h2 font-semibold text-marca-texto">
               Cómo funciona
             </h2>
-            <p className="mt-3 max-w-2xl text-body text-minka-muted">
-              Cuatro pasos. Los mismos que ya conoces de una junta de papel.
+            <p className="mt-3 max-w-2xl text-body text-marca-tenue">
+              Cuatro pasos. El mismo ritmo de siempre, con la custodia resuelta de
+              raíz.
             </p>
 
             <ol className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -146,27 +143,24 @@ export default function LandingPage() {
                 const Icono = paso.icono;
                 return (
                   <li key={paso.titulo}>
-                    {/* Relieve al pasar el cursor: 200ms, elevación sutil y un
-                        desplazamiento de 2px. Suficiente para que la tarjeta se
-                        sienta viva sin volverse una animación llamativa. */}
+                    {/* Relieve al pasar el cursor: 200ms, elevación sutil. */}
                     <Card className="h-full transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevated">
                       <CardContent className="flex h-full flex-col gap-3">
-                        <span className="flex size-14 items-center justify-center rounded-lg bg-[#f7e6d5]">
+                        <span className="flex size-14 items-center justify-center rounded-lg bg-[#e9f0ec]">
                           <Icono
                             size={30}
                             weight="duotone"
-                            color="#BF312A"
+                            color="#1F5C3D"
                             aria-hidden="true"
                           />
                         </span>
-                        {/* El número sí es información: el orden de los pasos importa */}
-                        <span className="text-support font-semibold text-minka-secondary">
+                        <span className="text-support font-semibold text-marca-secundario">
                           Paso {i + 1}
                         </span>
-                        <h3 className="text-h3 font-semibold text-minka-text">
+                        <h3 className="text-h3 font-semibold text-marca-texto">
                           {paso.titulo}
                         </h3>
-                        <p className="text-body text-minka-muted">{paso.texto}</p>
+                        <p className="text-body text-marca-tenue">{paso.texto}</p>
                       </CardContent>
                     </Card>
                   </li>
@@ -179,12 +173,12 @@ export default function LandingPage() {
         {/* Beneficios */}
         <section className="px-4 py-16">
           <div className="mx-auto w-full max-w-6xl">
-            <h2 className="text-h2 font-semibold text-minka-text">
+            <h2 className="text-h2 font-semibold text-marca-texto">
               Por qué es distinto
             </h2>
-            <p className="mt-3 max-w-2xl text-body text-minka-muted">
-              La junta funciona porque hay confianza. Minka hace que esa confianza
-              no dependa de una sola persona.
+            <p className="mt-3 max-w-2xl text-body text-marca-tenue">
+              La confianza de una asociación no debería depender de que una sola
+              persona no falle nunca.
             </p>
 
             <div className="mt-10 grid gap-6 md:grid-cols-2">
@@ -196,19 +190,19 @@ export default function LandingPage() {
                     className="transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevated"
                   >
                     <CardContent className="flex gap-4">
-                      <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-[#e9e2d4]">
+                      <span className="flex size-14 shrink-0 items-center justify-center rounded-lg bg-[#ece5d3]">
                         <Icono
                           size={30}
                           weight="duotone"
-                          color="#BF312A"
+                          color="#1F5C3D"
                           aria-hidden="true"
                         />
                       </span>
                       <div>
-                        <h3 className="text-h3 font-semibold text-minka-text">
+                        <h3 className="text-h3 font-semibold text-marca-texto">
                           {b.titulo}
                         </h3>
-                        <p className="mt-1.5 text-body text-minka-muted">
+                        <p className="mt-1.5 text-body text-marca-tenue">
                           {b.texto}
                         </p>
                       </div>
@@ -220,139 +214,65 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* Niveles de confianza */}
-        <section className="border-t border-minka-border bg-minka-surface px-4 py-16">
-          <div className="mx-auto w-full max-w-6xl">
-            <h2 className="text-h2 font-semibold text-minka-text">
-              Cumplir te cuesta menos
-            </h2>
-            <p className="mt-3 max-w-2xl text-body text-minka-muted">
-              Cada cuota puntual sube tu nivel. Y mientras más alto tu nivel, menos
-              garantía te piden para cobrar tu turno antes de tiempo.
+        {/* Precios: modelo B2B por asociación, sin planes freemium individuales */}
+        <section
+          id="precios"
+          className="scroll-mt-20 border-t border-marca-borde bg-marca-superficie px-4 py-16"
+        >
+          <div className="mx-auto w-full max-w-3xl text-center">
+            <h2 className="text-h2 font-semibold text-marca-texto">Precios</h2>
+            <p className="mx-auto mt-3 max-w-xl text-body text-marca-tenue">
+              Junta se contrata por asociación, no por persona. Cada comerciante y
+              cada directivo usan la plataforma sin costo individual.
             </p>
 
-            <ol className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-              {NIVELES.map((nivel) => (
-                <li key={nivel.id}>
-                  <div
-                    className="flex h-full flex-col rounded-lg border border-minka-border bg-minka-bg p-5 transition-[box-shadow,transform] duration-200 ease-out hover:-translate-y-0.5 hover:shadow-elevated"
-                    style={{ borderTopColor: nivel.color, borderTopWidth: 4 }}
-                  >
-                    <Medal
-                      size={30}
-                      weight="duotone"
-                      color={nivel.color}
-                      aria-hidden="true"
-                    />
-                    <h3
-                      className="mt-3 text-h3 font-semibold"
-                      style={{ color: nivel.color }}
-                    >
-                      {nivel.nombre}
-                    </h3>
-                    <p className="mt-1 text-support font-semibold text-minka-text">
-                      Garantía: {nivel.porcentajeGarantia}%
-                    </p>
-                    <p className="mt-2 text-support text-minka-muted">
-                      {nivel.beneficio}
-                    </p>
-                  </div>
-                </li>
-              ))}
-            </ol>
-
-            <p className="mt-6 rounded-lg border border-minka-border bg-minka-bg p-4 text-body text-minka-text">
-              Y aparte del nivel: cuando terminas 2 juntas como organizador, puedes
-              abrir juntas públicas, donde entra gente que todavía no conoces.
-            </p>
-          </div>
-        </section>
-
-        {/* Planes */}
-        <section className="border-t border-minka-border bg-minka-bg px-4 py-16">
-          <div className="mx-auto w-full max-w-6xl">
-            <h2 className="text-h2 font-semibold text-minka-text">Planes</h2>
-            <p className="mt-3 max-w-2xl text-body text-minka-muted">
-              Lo que hace segura a una junta es gratis y lo será siempre. El plan
-              pagado solo agrega comodidad.
-            </p>
-
-            <div className="mt-10 grid gap-6 md:grid-cols-2">
-              <Card>
-                <CardContent>
-                  <h3 className="text-h3 font-semibold text-minka-text">
-                    Gratuito
+            <Card className="mt-8 text-left">
+              <CardContent>
+                <div className="flex items-baseline justify-between gap-4">
+                  <h3 className="text-h3 font-semibold text-marca-texto">
+                    Suscripción por asociación
                   </h3>
-                  <p className="mt-1 text-h2 font-semibold text-minka-text">
-                    S/ 0
-                  </p>
-                  <ul className="mt-5 space-y-3">
-                    {[
-                      "Juntas privadas con tu gente de confianza",
-                      "Garantía, aval y prima incluidos",
-                      "Tu historial de confianza completo",
-                      "Recordatorios por WhatsApp",
-                    ].map((item) => (
-                      <li key={item} className="flex gap-2.5 text-body">
-                        <Check
-                          size={22}
-                          weight="bold"
-                          color="#4B6B3A"
-                          className="mt-0.5 shrink-0"
-                          aria-hidden="true"
-                        />
-                        <span className="text-minka-text">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
+                  <Vault size={28} weight="duotone" color="#1F5C3D" aria-hidden="true" />
+                </div>
+                <p className="mt-2 text-[28px] font-semibold text-marca-texto">
+                  Una cuota mensual fija
+                  <span className="block text-body font-normal text-marca-tenue">
+                    Se conversa con cada mercado según su número de puestos
+                  </span>
+                </p>
+                <ul className="mt-5 space-y-3">
+                  {[
+                    "Fondo protegido con firma múltiple, sin límite de movimientos",
+                    "Todos los comerciantes y directivos de tu mercado incluidos",
+                    "Historial de cumplimiento y reportes exportables para SUNAT",
+                    "Centro de ayuda y acompañamiento durante la puesta en marcha",
+                  ].map((item) => (
+                    <li key={item} className="flex gap-2.5 text-body">
+                      <Check
+                        size={22}
+                        weight="bold"
+                        color="#4C8C5C"
+                        className="mt-0.5 shrink-0"
+                        aria-hidden="true"
+                      />
+                      <span className="text-marca-texto">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+            </Card>
 
-              <Card className="border-2 border-minka-secondary">
-                <CardContent>
-                  <h3 className="text-h3 font-semibold text-minka-text">
-                    Organizador Pro
-                  </h3>
-                  <p className="mt-1 text-h2 font-semibold text-minka-text">
-                    S/ 12{" "}
-                    <span className="text-body font-normal text-minka-muted">
-                      al mes
-                    </span>
-                  </p>
-                  <ul className="mt-5 space-y-3">
-                    {[
-                      "Más juntas al mismo tiempo",
-                      "Montos más altos en juntas privadas",
-                      "Herramientas de gestión para el organizador",
-                      "Sin anuncios",
-                    ].map((item) => (
-                      <li key={item} className="flex gap-2.5 text-body">
-                        <Check
-                          size={22}
-                          weight="bold"
-                          color="#4B6B3A"
-                          className="mt-0.5 shrink-0"
-                          aria-hidden="true"
-                        />
-                        <span className="text-minka-text">{item}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-              </Card>
-            </div>
-
-            <p className="mt-6 rounded-lg border border-minka-border bg-minka-bg p-4 text-body text-minka-text">
+            <p className="mt-6 rounded-lg border border-marca-borde bg-marca-fondo p-4 text-body text-marca-texto">
               <strong className="font-semibold">
-                Ningún plan compra tu turno.
+                Ningún plan cambia quién puede mover el fondo.
               </strong>{" "}
-              Cobrar temprano y organizar juntas públicas se gana solo con
-              historial. Eso no está a la venta.
+              El umbral de firmas lo define cada asociación, no un nivel de
+              suscripción.
             </p>
 
-            <Button asChild variant="outline" size="lg" className="mt-8">
-              <Link href="/planes">
-                Ver el detalle de los planes
+            <Button asChild size="lg" className="mt-8">
+              <Link href="/registro">
+                Hablar sobre mi asociación
                 <ArrowRight size={22} weight="bold" />
               </Link>
             </Button>
@@ -362,12 +282,11 @@ export default function LandingPage() {
         {/* Cierre */}
         <section className="px-4 py-16">
           <div className="mx-auto w-full max-w-3xl text-center">
-            <h2 className="text-h2 font-semibold text-minka-text">
-              Empieza tu junta esta semana
+            <h2 className="text-h2 font-semibold text-marca-texto">
+              Empieza a proteger tu fondo esta semana
             </h2>
-            <p className="mx-auto mt-3 max-w-xl text-body text-minka-muted">
-              Solo necesitas tu número de celular y la gente con la que siempre
-              ahorras.
+            <p className="mx-auto mt-3 max-w-xl text-body text-marca-tenue">
+              Solo necesitas tu número de celular y los datos de tu directorio.
             </p>
             <Button asChild size="lg" className="mt-7">
               <Link href="/registro">
@@ -379,31 +298,31 @@ export default function LandingPage() {
         </section>
       </main>
 
-      <footer className="border-t border-minka-border bg-minka-surface px-4 py-12">
+      <footer className="border-t border-marca-borde bg-marca-superficie px-4 py-12">
         <div className="mx-auto w-full max-w-6xl">
           <div className="grid gap-8 sm:grid-cols-3">
             <div>
               <Logo size={34} />
-              <p className="mt-3 max-w-xs text-support text-minka-muted">
-                La junta de siempre, con el dinero del grupo a salvo.
+              <p className="mt-3 max-w-xs text-support text-marca-tenue">
+                El fondo de tu asociación, protegido con firma múltiple.
               </p>
             </div>
 
             <nav aria-label="Navegación del pie">
-              <h2 className="text-support font-semibold text-minka-text">
-                Minka
+              <h2 className="text-support font-semibold text-marca-texto">
+                Junta
               </h2>
               <ul className="mt-2">
                 {[
                   { href: "#como-funciona", label: "Cómo funciona" },
-                  { href: "/planes", label: "Planes" },
+                  { href: "#precios", label: "Precios" },
                   { href: "/soporte", label: "Centro de ayuda" },
                   { href: "/registro", label: "Crear cuenta" },
                 ].map((e) => (
                   <li key={e.href}>
                     <Link
                       href={e.href}
-                      className="touch-target flex items-center text-body text-minka-muted transition-colors hover:text-minka-text"
+                      className="touch-target flex items-center text-body text-marca-tenue transition-colors hover:text-marca-texto"
                     >
                       {e.label}
                     </Link>
@@ -413,14 +332,14 @@ export default function LandingPage() {
             </nav>
 
             <div>
-              <h2 className="text-support font-semibold text-minka-text">
+              <h2 className="text-support font-semibold text-marca-texto">
                 Contacto
               </h2>
               <ul className="mt-2">
                 <li>
                   <a
                     href="https://wa.me/51987654321"
-                    className="touch-target flex items-center gap-2 text-body text-minka-muted transition-colors hover:text-minka-text"
+                    className="touch-target flex items-center gap-2 text-body text-marca-tenue transition-colors hover:text-marca-texto"
                   >
                     <WhatsappLogo size={22} weight="fill" aria-hidden="true" />
                     WhatsApp
@@ -428,19 +347,26 @@ export default function LandingPage() {
                 </li>
                 <li>
                   <a
-                    href="mailto:hola@minka.pe"
-                    className="touch-target flex items-center text-body text-minka-muted transition-colors hover:text-minka-text"
+                    href="mailto:hola@junta.pe"
+                    className="touch-target flex items-center text-body text-marca-tenue transition-colors hover:text-marca-texto"
                   >
-                    hola@minka.pe
+                    hola@junta.pe
                   </a>
+                </li>
+                <li>
+                  <span className="flex items-center gap-2 text-body text-marca-tenue">
+                    <Megaphone size={20} weight="duotone" aria-hidden="true" />
+                    Anuncios solo dentro de tu asociación
+                  </span>
                 </li>
               </ul>
             </div>
           </div>
 
-          <p className="mt-10 border-t border-minka-border pt-6 text-support text-minka-muted">
-            © 2026 Minka. Minka no custodia el dinero de las juntas ni actúa como
-            entidad financiera. Prototipo con fines de demostración.
+          <p className="mt-10 border-t border-marca-borde pt-6 text-support text-marca-tenue">
+            © 2026 Junta. Junta no custodia el fondo de las asociaciones ni actúa
+            como entidad financiera — el fondo vive en un Safe multifirma. Prototipo
+            con fines de demostración.
           </p>
         </div>
       </footer>

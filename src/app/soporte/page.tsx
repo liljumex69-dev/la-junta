@@ -11,8 +11,12 @@ export default function SoportePage() {
     <div className="flex min-h-dvh flex-col bg-marca-fondo">
       <header className="sticky top-0 z-40 border-b border-marca-borde bg-marca-fondo/95 backdrop-blur">
         <div className="mx-auto flex h-16 w-full max-w-[720px] items-center gap-2 px-4">
+          {/* No asumimos que quien llega aquí tiene sesión — esta ruta
+              standalone solo queda como respaldo de quien la tenga guardada
+              o llegue por un enlace viejo. El resto de la app abre la ayuda
+              como modal (ver DialogAyuda) y nunca navega hasta aquí. */}
           <Link
-            href="/inicio"
+            href="/"
             aria-label="Volver"
             className="touch-target -ml-3 grid place-items-center rounded-md text-marca-texto transition-colors hover:bg-[#ece5d3]"
           >

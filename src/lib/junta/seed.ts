@@ -254,8 +254,11 @@ export const PROPUESTAS_SEED: PropuestaGasto[] = [
     motivo: "Reparación del techo del pabellón C, tiene filtraciones desde las lluvias de julio",
     categoria: "Mantenimiento",
     fecha: "2026-08-05",
+    // A propósito, sin la firma de Marco: proponer un gasto no firma en
+    // automático, ni siquiera para quien lo propuso — y así el perfil
+    // directivo de la demo tiene una firma real pendiente por dar, en vez de
+    // llegar con esta propuesta ya firmada de antemano.
     firmas: [
-      { directivoId: "u-marco", directivoNombre: "Marco Huamán Torres", fecha: "2026-08-05" },
       { directivoId: "u-rosario", directivoNombre: "Rosario Fernández Paredes", fecha: "2026-08-05" },
     ],
     umbralRequerido: 3,
@@ -353,11 +356,11 @@ export const NOTIFICACIONES_SEED: Notificacion[] = [
     id: "n-2",
     usuarioId: "u-marco",
     tipo: "propuesta_pendiente",
-    titulo: "Falta una firma para el techo del pabellón C",
-    mensaje: "Ya firmaste. Todavía falta 1 firma más de otro directivo para ejecutar el gasto.",
+    titulo: "Tu firma falta para el techo del pabellón C",
+    mensaje: "Rosario ya firmó. Faltan tu firma y una más para ejecutar el gasto.",
     fecha: "2026-08-05",
     leida: false,
-    enlace: "/fondo",
+    enlace: "/fondo/propuesta/pg-1",
   },
 ];
 
@@ -380,7 +383,7 @@ export const ANUNCIOS_SEED: Anuncio[] = [
     publicadoPorNombre: "Marco Huamán Torres",
     titulo: "Reparación del techo del pabellón C ya está en votación",
     contenido:
-      "Propuse el gasto de reparación del techo del pabellón C. Ya tiene 2 de 3 firmas — en cuanto se complete, empieza la obra la próxima semana.",
+      "Propuse el gasto de reparación del techo del pabellón C. Ya tiene 1 de 3 firmas — en cuanto se complete, empieza la obra la próxima semana.",
     fecha: "2026-08-05",
     fijado: false,
   },

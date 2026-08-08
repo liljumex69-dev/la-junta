@@ -68,11 +68,16 @@ export function MenuCuenta() {
           className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
         >
           <span
-            className="grid size-8 shrink-0 place-items-center rounded-full text-support font-semibold text-white"
-            style={{ backgroundColor: usuario.colorAvatar ?? "#1F5C3D" }}
+            className="grid size-8 shrink-0 place-items-center overflow-hidden rounded-full text-support font-semibold text-white"
+            style={{ backgroundColor: usuario.fotoUrl ? undefined : (usuario.colorAvatar ?? "#1F5C3D") }}
             aria-hidden="true"
           >
-            {usuario.iniciales}
+            {usuario.fotoUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={usuario.fotoUrl} alt="" className="size-full object-cover" />
+            ) : (
+              usuario.iniciales
+            )}
           </span>
           <span className="grid min-w-0 flex-1 text-left leading-tight">
             <span className="truncate text-body font-semibold text-marca-texto">

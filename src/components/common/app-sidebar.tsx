@@ -6,8 +6,8 @@ import {
   ChartBar,
   Gear,
   House,
-  Megaphone,
   PiggyBank,
+  TreeStructure,
 } from "@phosphor-icons/react/ssr";
 
 import {
@@ -44,12 +44,15 @@ import { useJunta } from "@/lib/junta/context";
  * "Inicio" y "El fondo" se unificaron en una sola pantalla (antes repetían
  * saldo, propuestas y botones) — por eso `/fondo/...` también cuenta como
  * activo para "Inicio", en vez de tener una segunda entrada casi idéntica.
+ * Lo mismo pasó con "Tablón de anuncios": ahora vive dentro de Inicio (con su
+ * propio scroll y el botón de publicar), así que ese lugar del sidebar pasó a
+ * ser el Organigrama — contenido que antes no tenía ningún sitio propio.
  */
 const DESTINOS = [
-  { href: "/inicio", label: "Inicio", icono: House, tambienActivoEn: ["/fondo"] },
+  { href: "/inicio", label: "Inicio", icono: House, tambienActivoEn: ["/fondo", "/anuncios"] },
   { href: "/ahorro", label: "Mi ahorro personal", icono: PiggyBank },
   { href: "/cumplimiento", label: "Historial de cumplimiento", icono: ChartBar },
-  { href: "/anuncios", label: "Tablón de anuncios", icono: Megaphone },
+  { href: "/organigrama", label: "Organigrama", icono: TreeStructure },
 ] as const;
 
 export function AppSidebar() {

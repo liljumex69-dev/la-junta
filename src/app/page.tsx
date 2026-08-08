@@ -18,6 +18,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Logo } from "@/components/common/logo";
 import { HeroCarousel } from "@/components/landing/hero-carousel";
 import { SiteHeader } from "@/components/landing/site-header";
+import { DialogAyuda } from "@/components/soporte/dialog-ayuda";
 
 /*
   Landing page pública.
@@ -316,7 +317,6 @@ export default function LandingPage() {
                 {[
                   { href: "#como-funciona", label: "Cómo funciona" },
                   { href: "#precios", label: "Precios" },
-                  { href: "/soporte", label: "Centro de ayuda" },
                   { href: "/registro", label: "Crear cuenta" },
                 ].map((e) => (
                   <li key={e.href}>
@@ -328,6 +328,20 @@ export default function LandingPage() {
                     </Link>
                   </li>
                 ))}
+                {/* Modal, no ruta: mismo motivo que en el navbar — nadie tiene
+                    sesión todavía en esta página. */}
+                <li>
+                  <DialogAyuda
+                    trigger={
+                      <button
+                        type="button"
+                        className="touch-target flex items-center text-body text-marca-tenue transition-colors hover:text-marca-texto"
+                      >
+                        Centro de ayuda
+                      </button>
+                    }
+                  />
+                </li>
               </ul>
             </nav>
 

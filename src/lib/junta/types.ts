@@ -28,8 +28,14 @@ export interface Usuario {
   dni: string;
   telefono: string;
   iniciales: string;
-  /** Simulado: en el prototipo es un color de fondo para el avatar, no un archivo real. */
+  /** Color de fondo del avatar cuando no hay foto — se usa junto a las iniciales. */
   colorAvatar?: string;
+  /**
+   * Foto de perfil, simulada: se guarda como data URL en memoria (nunca sube a
+   * ningún servidor ni se persiste entre recargas). Si está presente, reemplaza
+   * el círculo de iniciales+color en todos los avatares del usuario.
+   */
+  fotoUrl?: string;
   rol: Rol;
   /** Solo si `rol === "directivo"`. */
   cargo?: CargoDirectivo;

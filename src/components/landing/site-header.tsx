@@ -5,6 +5,7 @@ import { useState } from "react";
 import { List, X } from "@phosphor-icons/react/ssr";
 import { Button } from "@/components/ui/button";
 import { Logo } from "@/components/common/logo";
+import { DialogAyuda } from "@/components/soporte/dialog-ayuda";
 
 /**
  * Navbar fija de la landing.
@@ -12,11 +13,15 @@ import { Logo } from "@/components/common/logo";
  * El fondo es el mismo pergamino cálido de la página (#F3EFE4), sin barra blanca ni
  * oscura contrastante — el documento de diseño lo pide explícitamente. Al hacer
  * scroll solo aparece una línea divisoria sutil.
+ *
+ * "Soporte" no es un href — todavía no hay sesión aquí, así que en vez de
+ * navegar a la ruta completa /soporte (que además arrastraba a cualquiera
+ * que cerrara sesión a una pantalla rara al volver), abre el mismo modal de
+ * ayuda que usa el resto de la app.
  */
 const ENLACES = [
   { href: "#como-funciona", label: "Cómo funciona" },
   { href: "#precios", label: "Precios" },
-  { href: "/soporte", label: "Soporte" },
 ];
 
 export function SiteHeader() {
@@ -43,6 +48,16 @@ export function SiteHeader() {
               {e.label}
             </Link>
           ))}
+          <DialogAyuda
+            trigger={
+              <button
+                type="button"
+                className="touch-target flex items-center rounded-md px-4 text-body font-medium text-marca-texto transition-colors hover:bg-[#ece5d3]"
+              >
+                Soporte
+              </button>
+            }
+          />
           <Button asChild variant="outline" className="ml-3">
             <Link href="/entrar">Ingresar</Link>
           </Button>
@@ -86,6 +101,17 @@ export function SiteHeader() {
               {e.label}
             </Link>
           ))}
+          <DialogAyuda
+            trigger={
+              <button
+                type="button"
+                onClick={() => setAbierto(false)}
+                className="touch-target flex w-full items-center border-b-0 text-body font-medium text-marca-texto"
+              >
+                Soporte
+              </button>
+            }
+          />
         </nav>
       )}
     </header>

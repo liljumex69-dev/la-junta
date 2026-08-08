@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import { ChatCircleDots } from "@phosphor-icons/react/ssr";
 
 import {
@@ -18,20 +18,28 @@ import { ChatSoporte } from "@/components/soporte/chat-soporte";
  * Centro de ayuda como modal, no como pantalla completa.
  *
  * Antes, tocar "Ayuda" navegaba a /soporte y reemplazaba toda la vista —
- * perdías de vista dónde estabas. Como modal, el fondo, el sidebar y el resto
- * de la pantalla se mantienen detrás; cerrar el modal te devuelve exactamente
- * a donde estabas, sin recargar nada.
+ * perdías de vista dónde estabas. Como modal, el fondo, el resto de la
+ * pantalla se mantienen detrás; cerrar el modal te devuelve exactamente a
+ * donde estabas, sin recargar nada.
+ *
+ * `trigger` es opcional: dentro de la app (con `SidebarProvider` disponible)
+ * el disparador por defecto es el ítem de sidebar de siempre. Fuera de la
+ * app — landing pública, pie de página, cualquier lugar sin sidebar — quien
+ * use este componente pasa su propio disparador (un link con la misma pinta
+ * que sus vecinos) para no depender de contexto que ahí no existe.
  */
-export function DialogAyuda() {
+export function DialogAyuda({ trigger }: { trigger?: ReactNode }) {
   const [abierto, setAbierto] = useState(false);
 
   return (
     <Dialog open={abierto} onOpenChange={setAbierto}>
       <DialogTrigger asChild>
-        <SidebarMenuButton tooltip="Centro de ayuda" size="lg">
-          <ChatCircleDots size={22} weight="duotone" aria-hidden="true" />
-          <span>Ayuda</span>
-        </SidebarMenuButton>
+        {trigger ?? (
+          <SidebarMenuButton tooltip="Centro de ayuda" size="lg">
+            <ChatCircleDots size={22} weight="duotone" aria-hidden="true" />
+            <span>Ayuda</span>
+          </SidebarMenuButton>
+        )}
       </DialogTrigger>
       <DialogContent className="flex max-h-[85vh] w-full max-w-lg flex-col gap-0 overflow-hidden bg-marca-fondo p-0 sm:max-w-lg">
         <DialogHeader className="border-b border-marca-borde px-5 py-4">

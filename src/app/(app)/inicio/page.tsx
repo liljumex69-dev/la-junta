@@ -6,6 +6,7 @@ import {
   CheckCircle,
   HandCoins,
   Megaphone,
+  PushPin,
   Signature,
   Warning,
 } from "@phosphor-icons/react/ssr";
@@ -17,6 +18,7 @@ import { TarjetaSaldoFondo } from "@/components/asociacion/tarjeta-saldo-fondo";
 import { TarjetaPropuesta } from "@/components/asociacion/tarjeta-propuesta";
 import { ListaMovimientos } from "@/components/asociacion/lista-movimientos";
 import { DashboardDirectivo } from "@/components/asociacion/dashboard-directivo";
+import { FormularioAnuncio } from "@/components/common/formulario-anuncio";
 import { calcularSaldoFondo, esDirectivo } from "@/lib/junta/rules";
 import { useJunta } from "@/lib/junta/context";
 
@@ -49,6 +51,12 @@ export default function InicioPage() {
         (p) => !p.firmas.some((f) => f.directivoId === usuario.id)
       )
     : [];
+
+  // Fijados primero, igual que en el tablón — lo más importante arriba.
+  const anunciosOrdenados = [
+    ...anuncios.filter((a) => a.fijado),
+    ...anuncios.filter((a) => !a.fijado),
+  ];
 
   return (
     <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:items-start">
@@ -170,30 +178,31 @@ export default function InicioPage() {
         </section>
       </div>
 
-      {/* Columna secundaria: tablón de anuncios. El encabezado queda fijo y solo
-          la lista scrollea dentro de su propia altura — así se puede recorrer
-          todo el tablón sin depender del scroll de la página entera. */}
+      {/* Columna secundaria: tablón de anuncios, completo en esta misma vista —
+          no necesita ser una sección aparte del sidebar. El encabezado y el
+          formulario de publicar quedan fijos; solo la lista scrollea dentro de
+          su propia altura, para recorrer todo el tablón sin depender del
+          scroll de la página entera. */}
       <div className="flex flex-col gap-4 lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
-        <div className="flex shrink-0 items-baseline justify-between gap-3">
-          <h2 className="text-h2 font-semibold text-marca-texto">
-            Tablón de anuncios
-          </h2>
-          <Link
-            href="/anuncios"
-            className="touch-target flex items-center rounded-md text-support font-semibold text-marca-primario"
-          >
-            Ver todos
-          </Link>
-        </div>
-        {anuncios.length === 0 ? (
+        <h2 className="shrink-0 text-h2 font-semibold text-marca-texto">
+          Tablón de anuncios
+        </h2>
+
+        {directivo ? (
+          <div className="shrink-0">
+            <FormularioAnuncio />
+          </div>
+        ) : null}
+
+        {anunciosOrdenados.length === 0 ? (
           <p className="rounded-lg border border-marca-borde bg-marca-superficie p-4 text-support text-marca-tenue">
             Todavía no hay anuncios en el tablón.
           </p>
         ) : (
           <div className="space-y-3 overflow-y-auto lg:pr-1">
-            {anuncios.map((a, i) => (
+            {anunciosOrdenados.map((a, i) => (
               <Aparecer key={a.id} retraso={0.05 * i}>
-                <Card>
+                <Card className={a.fijado ? "border-2 border-marca-secundario" : undefined}>
                   <CardContent className="flex gap-3">
                     <Megaphone
                       size={24}
@@ -203,10 +212,15 @@ export default function InicioPage() {
                       aria-hidden="true"
                     />
                     <div className="min-w-0">
-                      <p className="text-body font-semibold text-marca-texto">
-                        {a.titulo}
-                      </p>
-                      <p className="mt-1 line-clamp-2 text-support text-marca-tenue">
+                      <div className="flex items-center gap-2">
+                        {a.fijado ? (
+                          <PushPin size={14} weight="fill" color="#B8863B" aria-hidden="true" />
+                        ) : null}
+                        <p className="text-body font-semibold text-marca-texto">
+                          {a.titulo}
+                        </p>
+                      </div>
+                      <p className="mt-1 text-support text-marca-tenue">
                         {a.contenido}
                       </p>
                       <p className="mt-1 text-support text-marca-tenue">

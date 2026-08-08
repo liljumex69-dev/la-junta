@@ -130,7 +130,12 @@ interface ContextoJunta {
   iniciarSesion: (usuarioId: string) => void;
   iniciarSesionPorTelefono: (telefono: string) => Usuario | null;
   cerrarSesion: () => void;
-  actualizarPerfil: (datos: { nombre?: string; colorAvatar?: string }) => void;
+  actualizarPerfil: (datos: {
+    nombre?: string;
+    colorAvatar?: string;
+    /** `undefined` no toca la foto actual; `null` la quita explícitamente. */
+    fotoUrl?: string | null;
+  }) => void;
 
   crearAsociacion: (datos: {
     nombreMercado: string;
@@ -321,6 +326,10 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
                 nombre: datos.nombre?.trim() || u.nombre,
                 iniciales: datos.nombre?.trim() ? iniciales(datos.nombre) : u.iniciales,
                 colorAvatar: datos.colorAvatar ?? u.colorAvatar,
+                fotoUrl:
+                  datos.fotoUrl === undefined
+                    ? u.fotoUrl
+                    : (datos.fotoUrl ?? undefined),
               }
             : u
         ),

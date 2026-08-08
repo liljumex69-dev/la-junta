@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   ArrowsClockwise,
   CaretDown,
@@ -39,12 +40,20 @@ export function MenuCuenta() {
   const router = useRouter();
   const { usuario, usuarios, iniciarSesion, cerrarSesion } = useJunta();
 
+  // Controlado a propósito: los ítems que navegan con `router.push` en su
+  // `onSelect` (cambiar de perfil, cerrar sesión) pueden interrumpir el cierre
+  // automático de Radix a mitad de la transición de ruta, dejando el menú
+  // "cerrado" en data-state pero todavía montado con pointer-events activos,
+  // interceptando clics invisibles en el resto de la página. Cerrarlo nosotros
+  // mismos, antes de navegar, evita ese estado a medias.
+  const [abierto, setAbierto] = useState(false);
+
   if (!usuario) return null;
 
   const esDirectivo = usuario.rol === "directivo";
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={abierto} onOpenChange={setAbierto}>
       <DropdownMenuTrigger asChild>
         <button
           type="button"
@@ -126,6 +135,7 @@ export function MenuCuenta() {
           <DropdownMenuItem
             key={u.id}
             onSelect={() => {
+              setAbierto(false);
               iniciarSesion(u.id);
               router.push("/inicio");
             }}
@@ -139,7 +149,10 @@ export function MenuCuenta() {
           </DropdownMenuItem>
         ))}
         <DropdownMenuItem
-          onSelect={() => window.location.reload()}
+          onSelect={() => {
+            setAbierto(false);
+            window.location.reload();
+          }}
           className="min-h-[44px] text-body"
         >
           <ArrowsClockwise size={22} weight="duotone" aria-hidden="true" />
@@ -149,6 +162,7 @@ export function MenuCuenta() {
         <DropdownMenuSeparator className="bg-marca-borde" />
         <DropdownMenuItem
           onSelect={() => {
+            setAbierto(false);
             cerrarSesion();
             router.push("/");
           }}

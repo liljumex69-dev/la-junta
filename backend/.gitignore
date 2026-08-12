@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+.venv/
+junta.db
+.env
+.env.*
+!.env.example
+wallets_prueba.txt
+firma_resultado.txt
+wallets_demo_vivo.txt
+tx_pago_demo.txt

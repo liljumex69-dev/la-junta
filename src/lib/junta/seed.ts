@@ -43,6 +43,7 @@ export const ASOCIACION_DEMO: Asociacion = {
     { nombre: "Teodoro Quinteros Vega", cargo: "vocal" },
   ],
   creadaEn: "2026-01-15",
+  safeAddress: null,
 };
 
 /** Directorio completo — solo Marco y Rosario tienen cuenta logueable en la demo. */

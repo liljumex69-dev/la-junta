@@ -99,6 +99,13 @@ export interface Asociacion {
   /** Directorio declarado al fundar, sin contar al fundador (que sí tiene cuenta). */
   directivosIniciales: DirectivoInicial[];
   creadaEn: string;
+  /**
+   * Dirección del Safe multifirma real desplegado en Arbitrum Sepolia para
+   * esta asociación (ver backend/app/safe_deploy.py). `null` mientras el
+   * frontend no esté conectado al backend real — hoy este prototipo sigue
+   * siendo 100% simulación en memoria (ver ProveedorJunta en context.tsx).
+   */
+  safeAddress: string | null;
 }
 
 export type EstadoCuota = "pagado" | "pendiente" | "mora";

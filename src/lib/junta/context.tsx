@@ -359,6 +359,11 @@ export function ProveedorJunta({ children }: { children: React.ReactNode }) {
         categorias: ["Seguridad", "Mantenimiento", "Mejoras", "Otras"],
         directivosIniciales: datos.directivosIniciales,
         creadaEn: new Date().toISOString().slice(0, 10),
+        // El backend (backend/app/safe_deploy.py) ya despliega un Safe real
+        // y devuelve safeAddress — pero este Context sigue sin llamarlo:
+        // sigue siendo 100% simulación local. Queda en null a propósito
+        // hasta que se conecte de verdad (ver conversación con el equipo).
+        safeAddress: null,
       };
       // TODO: conectar a Safe/smart contract — desplegar un Safe multifirma en
       // Arbitrum con el umbral indicado y registrar al fundador como primer firmante.

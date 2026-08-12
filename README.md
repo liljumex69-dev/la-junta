@@ -1,5 +1,9 @@
 # Junta — prototipo de interfaz
 
+🚀 **Enlaces Oficiales del Proyecto:**
+- **Frontend (Vercel):** [https://la-junta-black.vercel.app](https://la-junta-black.vercel.app)
+- **Backend (Render):** [https://la-junta.onrender.com](https://la-junta.onrender.com)
+
 Junta es una tesorería digital colectiva para asociaciones de comerciantes de
 mercado en Perú, construida sobre **Safe (Gnosis Safe) con firma múltiple** en
 Arbitrum. Ningún directivo individual puede mover el fondo por su cuenta: cada

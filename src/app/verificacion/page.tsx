@@ -22,9 +22,9 @@ import type { MovimientoFondo } from "@/lib/junta/types";
  */
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://127.0.0.1:8000";
-const ASOCIACION_ID = process.env.NEXT_PUBLIC_ASOCIACION_DEMO_ID ?? "a-da67e6c563a9";
+const ASOCIACION_ID = process.env.NEXT_PUBLIC_ASOCIACION_DEMO_ID ?? "a-f8b7736d053a";
 const SAFE_ADDRESS =
-  process.env.NEXT_PUBLIC_SAFE_ADDRESS_DEMO ?? "0x944e7EdE9d5e28E444348D348C99F5181AB51b86";
+  process.env.NEXT_PUBLIC_SAFE_ADDRESS_DEMO ?? "0x82C095D54fC04F56F4b85a302a555B3b70b06Ec3";
 
 type Estado =
   | { tipo: "cargando" }

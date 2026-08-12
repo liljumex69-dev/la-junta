@@ -27,12 +27,14 @@ if DEPLOYER_PRIVATE_KEY and not DEPLOYER_PRIVATE_KEY.startswith("0x"):
 
 # Orígenes permitidos por CORS (ver app/main.py). Configurable por entorno
 # para poder agregar el dominio real de Vercel en producción sin tocar
-# código — solo la variable de entorno en el panel de Render. Por defecto,
-# los puertos de desarrollo local.
+# código — solo la variable de entorno en el panel de Render. Si la variable
+# no está definida ahí, cae en este default, que incluye tanto los puertos
+# de desarrollo local como el dominio de producción en Vercel.
 ALLOWED_ORIGINS = [
     origen.strip()
     for origen in os.getenv(
-        "ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001"
+        "ALLOWED_ORIGINS",
+        "http://localhost:3000,http://localhost:3001,https://la-junta-black.vercel.app",
     ).split(",")
     if origen.strip()
 ]
